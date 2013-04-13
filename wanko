@@ -1,0 +1,76 @@
+#!/usr/bin/ruby
+
+require 'json'
+require 'open-uri'
+require 'nokogiri'
+require 'time'
+
+module Wanko
+  @config_dir = File.join Dir.home, '.crontorrent'
+  @config = JSON.parse IO.read(File.join @config_dir, 'config')
+
+  def self.save(conf)
+    open File.join(@config_dir, 'config'), 'w' do |file|
+      file.write JSON.pretty_generate conf
+    end
+  end
+
+  def self.add(rule, dir)
+    @config['rules'][rule] = dir
+    save @config
+  end
+
+  def self.base_dir()
+    @config['base_directory']
+  end
+
+  def self.set_base_dir(dir)
+    @config['base_directory'] = dir
+    save @config
+  end
+
+  def self.check()
+    begin
+      last_check = File.open(File.join(@config_dir, 'last_check')) {|f| Time.parse f.read}
+    rescue Errno::ENOENT
+      last_check = Time.now.utc
+    end
+
+    rules = @config['rules'].each_with_object({}) { |(rule, dir), rules|
+      dir = File.join @config['base_directory'], dir unless dir.start_with? '/'
+      rules[/#{rule}/i] = dir
+    }
+
+    this_check = Time.now.utc
+
+    @config['feeds'].each do |url|
+      open(url, read_timeout: 10) { |feed|
+        Nokogiri::XML(feed).xpath 'rss/channel/item'
+      }.each do |item|
+        break if Time.parse(item.at_xpath('pubDate').content) < last_check
+        rules.each do |rule, dir|
+          if item.at_xpath('title').content =~ rule
+            %x(transmission-remote -a "#{item.at_xpath('link').content}" -w #{dir})
+            break
+          end
+        end
+      end
+    end
+
+    open File.join(@config_dir, 'last_check'), 'w' do |file|
+      file.write this_check
+    end
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  if ARGV[0] == 'add'
+    Wanko.add ARGV[1], ARGV[2]
+  elsif ARGV[0] == 'base'
+    puts Wanko.base_dir
+  elsif ARGV[0] == 'set-base'
+    Wanko.set_base_dir ARGV[1]
+  else
+    Wanko.check
+  end
+end
