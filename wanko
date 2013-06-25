@@ -7,12 +7,10 @@ require 'time'
 
 module Wanko
   @config_dir = File.join Dir.home, '.wanko'
-  @config = JSON.parse IO.read(File.join @config_dir, 'config')
+  @config = JSON.parse File.read(File.join @config_dir, 'config')
 
   def self.save(info, filename)
-    open File.join(@config_dir, filename), 'w' do |file|
-      file.write JSON.pretty_generate info
-    end
+    File.write File.join(@config_dir, filename), JSON.pretty_generate(info)
   end
 
   def self.add(rule, dir)
