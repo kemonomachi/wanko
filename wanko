@@ -30,38 +30,45 @@ module Wanko
   end
 
   def self.fetch()
-    begin
-      latest_read_items = JSON.parse(IO.read(File.join @config_dir, 'latest_read_items')).each_with_object({}) { |(url,guid),latest_read_items|
-                     latest_read_items[url] = guid
-                   }
+    read_items = begin
+      JSON.parse File.read(File.join @config_dir, 'read_items')
     rescue Errno::ENOENT
-      latest_read_items = {}
+      {}
     end
+
+    read_items.default_proc = proc {|read_items,key| read_items[key] = []}
 
     rules = @config['rules'].each_with_object({}) { |(rule, dir), rules|
       dir = File.join @config['base_directory'], dir unless dir.start_with? '/'
       rules[/#{rule}/i] = dir
     }
 
-    newest_items = {}
-
     @config['feeds'].each do |url|
-      open(url, read_timeout: 10) { |feed|
-        Nokogiri::XML(feed).xpath 'rss/channel/item'
-      }.tap { |items|
-        newest_items[url] = items.first.at_xpath('guid').content
-      }.each do |item|
-        break if item.at_xpath('guid').content == latest_read_items[url]
-        rules.each do |rule, dir|
-          if item.at_xpath('title').content =~ rule
-            %x(transmission-remote -a "#{item.at_xpath('link').content}" -w #{dir})
-            break
+      begin
+        open url, read_timeout: 10 do |feed_xml|
+          new_read_items = []
+          Nokogiri::XML(feed_xml).xpath('rss/channel/item').each do |item|
+            item_id = item.at_xpath('guid').content
+
+            unless read_items[url].include? item_id
+              rules.each do |rule, dir|
+                if rule =~ item.at_xpath('title').content
+                  %x(transmission-remote -a "#{item.at_xpath('link').content}" -w #{dir})
+                end
+              end
+              new_read_items << item_id
+            end
           end
+
+          read_items[url] = (new_read_items + read_items[url]).first 50
         end
+
+      rescue OpenURI::HTTPError, Net::ReadTimeout, Errno::ECONNREFUSED
+        next
       end
     end
- 
-    save newest_items, 'latest_read_items'
+
+    save read_items, 'read_items'
   end
 end
 
