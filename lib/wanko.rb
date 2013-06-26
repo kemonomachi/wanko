@@ -20,6 +20,15 @@ module Wanko
     save @config, 'config'
   end
 
+  def self.default_dir()
+    @config['default_dir']
+  end
+
+  def self.default_dir=(dir)
+    @config['default_dir'] = File.absolute_path dir
+    save @config, 'config'
+  end
+
   def self.fetch()
     read_items = begin
       JSON.parse File.read(File.join @config_dir, 'read_items')
