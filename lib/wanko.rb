@@ -4,6 +4,7 @@ require 'json'
 require 'open-uri'
 require 'time'
 
+require 'formatador'
 require 'nokogiri'
 
 module Wanko
@@ -59,6 +60,14 @@ module Wanko
     end
 
     save read_items, 'read_items'
+  end
+
+  def self.list()
+    rows = @config['rules'].sort.each_with_index.map { |(pattern,dir),index|
+      {Rule: index, Pattern: pattern, Directory: dir}
+    }
+
+    Formatador.display_table rows, [:Rule, :Pattern, :Directory]
   end
 end
 
