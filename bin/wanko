@@ -92,7 +92,7 @@ when :add_feed
 when :fetch
   Wanko.fetch
 when :list
-  puts 'Not implemented'
+  Wanko.list
 when :remove
   puts 'Not implemented'
 when :remove_feed
