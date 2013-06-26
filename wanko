@@ -2,8 +2,9 @@
 
 require 'json'
 require 'open-uri'
-require 'nokogiri'
 require 'time'
+
+require 'nokogiri'
 
 module Wanko
   @config_dir = File.join Dir.home, '.wanko'
