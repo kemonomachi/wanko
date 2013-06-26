@@ -69,5 +69,10 @@ module Wanko
 
     Formatador.display_table rows, [:Rule, :Pattern, :Directory]
   end
+
+  def self.remove(indexes)
+    @config['rules'] = Hash[@config['rules'].sort.reject.with_index {|rule,i| indexes.include? i}]
+    save @config, 'config'
+  end
 end
 

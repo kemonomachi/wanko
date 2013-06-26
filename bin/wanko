@@ -52,11 +52,18 @@ else
       options[:action] = :list
     end
 
-    opts.on '-r', '--remove NUMBER', Integer,
-            'Remove rule NUMBER.',
-            'Use -l (--list) to show rule numbers.)' do |rule|
+    opts.on '-r', '--remove INDEXES', Array,
+            'Remove rules. INDEXES is a comma separated list',
+            'of integers or ranges of indexes to remove.',
+            'Use -l (--list) to show rule indexes.)' do |indexes|
       options[:action] = :remove
-      options[:rule] = rule
+      options[:indexes] = indexes.map { |index|
+        if index.include? '-'
+          Range.new(*index.split('-', 2).map {|n| Integer n}).to_a
+        else
+          Integer index
+        end
+      }.flatten
     end
 
     opts.on '--remove-feed NUMBER', Integer,
@@ -94,7 +101,7 @@ when :fetch
 when :list
   Wanko.list
 when :remove
-  puts 'Not implemented'
+  Wanko.remove options[:indexes]
 when :remove_feed
   puts 'Not implemented'
 when :set_default_dir
