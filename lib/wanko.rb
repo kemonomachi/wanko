@@ -104,7 +104,7 @@ module Wanko
   end
 
   def self.remove(indexes)
-    @config['rules'] = Hash[@config['rules'].reject.with_index {|rule,i| indexes.include? i}]
+    @config['rules'] = @config['rules'].reject.with_index {|rule,i| indexes.include? i}
     save @config, 'config'
   end
 
