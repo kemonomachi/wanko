@@ -103,13 +103,8 @@ module Wanko
     Formatador.display_table rows, [:Feed, :URL]
   end
 
-  def self.remove(indexes)
-    @config['rules'] = @config['rules'].reject.with_index {|rule,i| indexes.include? i}
-    save @config, 'config'
-  end
-
-  def self.remove_feeds(indexes)
-    @config['feeds'] = @config['feeds'].reject.with_index {|feed,i| indexes.include? i}
+  def self.remove(type, indexes)
+    @config[type] = @config[type].reject.with_index {|_,i| indexes.include? i}
     save @config, 'config'
   end
 end
