@@ -10,20 +10,20 @@ options = {}
 if ARGV.empty?
   options[:action] = :fetch
 else
-  opt_parser = OptionParser.new do |opts|
-    opts.banner = 'Usage: wanko [action] [options]'
+  opt_parser = OptionParser.new do |parser|
+    parser.banner = 'Usage: wanko [action] [options]'
 
-    opts.separator ''
-    opts.separator 'Actions:' 
+    parser.separator ''
+    parser.separator 'Actions:' 
 
-    opts.on '-a', '--add PATTERN',
+    parser.on '-a', '--add PATTERN',
             'Add a new pattern to look for when fetching.',
             'PATTERN is a case-insensitve regexp.' do |pattern|
       options[:action] = :add
       options[:pattern] = pattern
     end
 
-    opts.on '--default-dir [DIR]',
+    parser.on '--default-dir [DIR]',
             'Set the default directory for fetch rules.',
             'Show the current default if DIR not specified.' do |directory|
       if directory
@@ -34,7 +34,7 @@ else
       end
     end
 
-    opts.on '-f', '--feed [URL]', '--feeds [URL]',
+    parser.on '-f', '--feed [URL]', '--feeds [URL]',
             'Add a new feed to watch for updates.',
             'Show current feeds if URL not specified.' do |url|
       if url
@@ -45,12 +45,12 @@ else
       end
     end
 
-    opts.on '-l', '--list',
+    parser.on '-l', '--list',
             'Show current rules.' do
       options[:action] = :list
     end
 
-    opts.on '-r', '--remove INDEXES', Array,
+    parser.on '-r', '--remove INDEXES', Array,
             'Remove rules. INDEXES is a comma separated list',
             'of indexes or ranges of indexes to remove.',
             'Use -l to show rule indexes.' do |indexes|
@@ -58,7 +58,7 @@ else
       options[:indexes] = Wanko::Parsing.parse_index_list indexes
     end
 
-    opts.on '-R', '--remove-feed INDEXES', '--remove-feeds INDEXES',  Array,
+    parser.on '-R', '--remove-feed INDEXES', '--remove-feeds INDEXES',  Array,
             'Remove feeds. INDEXES is a comma separated list',
             'of indexes or ranges of indexes to remove',
             'Use -f to show feed indexes.' do |indexes|
@@ -66,21 +66,21 @@ else
       options[:indexes] = Wanko::Parsing.parse_index_list indexes
     end
 
-    opts.separator ''
-    opts.separator 'Options:'
+    parser.separator ''
+    parser.separator 'Options:'
 
-    opts.on '-d', '--directory DIR',
+    parser.on '-d', '--directory DIR',
             'Optional target directory for fetch rules.',
             'If not specified, the default directory is used.' do |directory|
       options[:directory] = directory
     end
 
-    opts.separator ''
-    opts.separator 'Other:'
+    parser.separator ''
+    parser.separator 'Other:'
 
-    opts.on '-h', '--help',
+    parser.on '-h', '--help',
             'Show this message' do
-      puts opts
+      puts parser
       exit
     end
   end
