@@ -54,8 +54,8 @@ else
 
     opts.on '-r', '--remove INDEXES', Array,
             'Remove rules. INDEXES is a comma separated list',
-            'of integers or ranges of indexes to remove.',
-            'Use -l (--list) to show rule indexes.)' do |indexes|
+            'of indexes or ranges of indexes to remove.',
+            'Use -l to show rule indexes.' do |indexes|
       options[:action] = :remove
       options[:indexes] = indexes.map { |index|
         if index.include? '-'
@@ -68,8 +68,8 @@ else
 
     opts.on '-R', '--remove-feed INDEXES', '--remove-feeds INDEXES',  Array,
             'Remove feeds. INDEXES is a comma separated list',
-            'of integers or ranges of indexes to remove',
-            'Use --feed to show feed numbers.)' do |indexes|
+            'of indexes or ranges of indexes to remove',
+            'Use -f to show feed indexes.' do |indexes|
       options[:action] = :remove_feed
       options[:indexes] = indexes.map { |index|
         if index.include? '-'
