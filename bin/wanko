@@ -3,6 +3,7 @@
 require 'optparse'
 
 require_relative '../lib/wanko'
+require_relative '../lib/wanko/parsing'
 
 options = {}
 
@@ -54,13 +55,7 @@ else
             'of indexes or ranges of indexes to remove.',
             'Use -l to show rule indexes.' do |indexes|
       options[:action] = :remove
-      options[:indexes] = indexes.map { |index|
-        if index.include? '-'
-          Range.new(*index.split('-', 2).map {|n| Integer n}).to_a
-        else
-          Integer index
-        end
-      }.flatten
+      options[:indexes] = Wanko::Parsing.parse_index_list indexes
     end
 
     opts.on '-R', '--remove-feed INDEXES', '--remove-feeds INDEXES',  Array,
@@ -68,13 +63,7 @@ else
             'of indexes or ranges of indexes to remove',
             'Use -f to show feed indexes.' do |indexes|
       options[:action] = :remove_feed
-      options[:indexes] = indexes.map { |index|
-        if index.include? '-'
-          Range.new(*index.split('-', 2).map {|n| Integer n}).to_a
-        else
-          Integer index
-        end
-      }.flatten
+      options[:indexes] = Wanko::Parsing.parse_index_list indexes
     end
 
     opts.separator ''
