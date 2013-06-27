@@ -3,29 +3,27 @@
 require 'optparse'
 
 require_relative '../lib/wanko'
+require_relative '../lib/wanko/parsing'
 
 options = {}
 
 if ARGV.empty?
   options[:action] = :fetch
 else
-  opt_parser = OptionParser.new do |opts|
-    opts.banner = 'Usage: wanko [action] [options]'
+  opt_parser = OptionParser.new do |parser|
+    parser.banner = 'Usage: wanko [action] [options]'
 
-    opts.on '-a', '--add PATTERN',
+    parser.separator ''
+    parser.separator 'Actions:' 
+
+    parser.on '-a', '--add PATTERN',
             'Add a new pattern to look for when fetching.',
             'PATTERN is a case-insensitve regexp.' do |pattern|
       options[:action] = :add
       options[:pattern] = pattern
     end
 
-    opts.on '-d', '--directory DIR',
-            'Optional target directory for fetch rules.',
-            'If not specified, the default directory is used.' do |directory|
-      options[:directory] = directory
-    end
-
-    opts.on '--default-dir [DIR]',
+    parser.on '-D', '--default-dir [DIR]',
             'Set the default directory for fetch rules.',
             'Show the current default if DIR not specified.' do |directory|
       if directory
@@ -36,7 +34,7 @@ else
       end
     end
 
-    opts.on '-f', '--feed [URL]', '--feeds [URL]',
+    parser.on '-f', '--feed [URL]', '--feeds [URL]',
             'Add a new feed to watch for updates.',
             'Show current feeds if URL not specified.' do |url|
       if url
@@ -47,42 +45,42 @@ else
       end
     end
 
-    opts.on '-l', '--list',
+    parser.on '-l', '--list',
             'Show current rules.' do
       options[:action] = :list
     end
 
-    opts.on '-r', '--remove INDEXES', Array,
+    parser.on '-r', '--remove INDEXES', Array,
             'Remove rules. INDEXES is a comma separated list',
-            'of integers or ranges of indexes to remove.',
-            'Use -l (--list) to show rule indexes.)' do |indexes|
+            'of indexes or ranges of indexes to remove.',
+            'Use -l to show rule indexes.' do |indexes|
       options[:action] = :remove
-      options[:indexes] = indexes.map { |index|
-        if index.include? '-'
-          Range.new(*index.split('-', 2).map {|n| Integer n}).to_a
-        else
-          Integer index
-        end
-      }.flatten
+      options[:indexes] = Wanko::Parsing.parse_index_list indexes
     end
 
-    opts.on '-R', '--remove-feed INDEXES', '--remove-feeds INDEXES',  Array,
+    parser.on '-R', '--remove-feed INDEXES', '--remove-feeds INDEXES',  Array,
             'Remove feeds. INDEXES is a comma separated list',
-            'of integers or ranges of indexes to remove',
-            'Use --feed to show feed numbers.)' do |indexes|
+            'of indexes or ranges of indexes to remove',
+            'Use -f to show feed indexes.' do |indexes|
       options[:action] = :remove_feed
-      options[:indexes] = indexes.map { |index|
-        if index.include? '-'
-          Range.new(*index.split('-', 2).map {|n| Integer n}).to_a
-        else
-          Integer index
-        end
-      }.flatten
+      options[:indexes] = Wanko::Parsing.parse_index_list indexes
     end
 
-    opts.on_tail '-h', '--help',
-                 'Show this message' do
-      puts opts
+    parser.separator ''
+    parser.separator 'Options:'
+
+    parser.on '-d', '--directory DIR',
+            'Optional target directory for fetch rules.',
+            'If not specified, the default directory is used.' do |directory|
+      options[:directory] = directory
+    end
+
+    parser.separator ''
+    parser.separator 'Other:'
+
+    parser.on '-h', '--help',
+            'Show this message' do
+      puts parser
       exit
     end
   end
@@ -106,16 +104,16 @@ when :add_feed
 when :fetch
   Wanko.fetch
 when :list
-  Wanko.list
+  Wanko.list :rules
 when :remove
-  Wanko.remove options[:indexes]
+  Wanko.remove :rules, options[:indexes]
 when :remove_feed
-  Wanko.remove_feeds options[:indexes]
+  Wanko.remove :feeds, options[:indexes]
 when :set_default_dir
   Wanko.default_dir = options[:directory]
 when :show_default_dir
   puts Wanko.default_dir
 when :show_feeds
-  Wanko.list_feeds
+  Wanko.list :feeds
 end
 
