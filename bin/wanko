@@ -104,16 +104,16 @@ when :add_feed
 when :fetch
   Wanko.fetch
 when :list
-  Wanko.list 'rules'
+  Wanko.list :rules
 when :remove
-  Wanko.remove 'rules', options[:indexes]
+  Wanko.remove :rules, options[:indexes]
 when :remove_feed
-  Wanko.remove 'feeds', options[:indexes]
+  Wanko.remove :feeds, options[:indexes]
 when :set_default_dir
   Wanko.default_dir = options[:directory]
 when :show_default_dir
   puts Wanko.default_dir
 when :show_feeds
-  Wanko.list 'feeds'
+  Wanko.list :feeds
 end
 

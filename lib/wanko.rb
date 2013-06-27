@@ -11,12 +11,12 @@ module Wanko
   @config_dir = File.join Dir.home, '.wanko'
 
   @config = begin
-    JSON.parse File.read(File.join @config_dir, 'config')
+    JSON.parse File.read(File.join @config_dir, 'config'), symbolize_names: true
   rescue Errno::ENOENT
     {
-     'default_dir' => File.join(Dir.home, 'downloads'),
-     'feeds' => [],
-     'rules' => {}
+     default_dir: File.join(Dir.home, 'downloads'),
+     feeds: [],
+     rules: {}
     }
   end
 
@@ -24,24 +24,24 @@ module Wanko
     File.write File.join(@config_dir, filename), JSON.pretty_generate(info)
   end
 
-  def self.add(rule, dir=@config['default_dir'])
-    @config['rules'][rule] = File.absolute_path dir
-    @config['rules'] = Hash[@config['rules'].sort]
+  def self.add(rule, dir=@config[:default_dir])
+    @config[:rules][rule.to_sym] = File.absolute_path dir
+    @config[:rules] = Hash[@config[:rules].sort]
     save @config, 'config'
   end
 
   def self.add_feed(feed)
-    @config['feeds'] << feed
-    @config['feeds'] = @config['feeds'].sort
+    @config[:feeds] << feed
+    @config[:feeds] = @config[:feeds].sort
     save @config, 'config'
   end
 
   def self.default_dir()
-    @config['default_dir']
+    @config[:default_dir]
   end
 
   def self.default_dir=(dir)
-    @config['default_dir'] = File.absolute_path dir
+    @config[:default_dir] = File.absolute_path dir
     save @config, 'config'
   end
 
@@ -54,12 +54,12 @@ module Wanko
 
     read_items.default_proc = proc {|read_items,key| read_items[key] = []}
 
-    rules = @config['rules'].each_with_object({}) { |(rule, dir), rules|
-      dir = File.join @config['base_directory'], dir unless dir.start_with? '/'
+    rules = @config[:rules].each_with_object({}) { |(rule, dir), rules|
+      dir = File.join @config[:base_directory], dir unless dir.start_with? '/'
       rules[/#{rule}/i] = dir
     }
 
-    @config['feeds'].each do |url|
+    @config[:feeds].each do |url|
       begin
         open url, read_timeout: 10 do |feed_xml|
           new_read_items = []
@@ -88,10 +88,10 @@ module Wanko
   end
 
   def self.list(type)
-    if type == 'rules'
+    if type == :rules
       headings = [:Pattern, :Directory, :Rule]
       order = [:Rule, :Pattern, :Directory]
-    elsif type == 'feeds'
+    elsif type == :feeds
       headings = [:URL, :Feed]
       order = [:Feed, :URL]
     end
