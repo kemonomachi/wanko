@@ -36,7 +36,7 @@ else
       end
     end
 
-    opts.on '--feed [URL]',
+    opts.on '-f', '--feed [URL]', '--feeds [URL]',
             'Add a new feed to watch for updates.',
             'Show current feeds if URL not specified.' do |url|
       if url
@@ -66,11 +66,18 @@ else
       }.flatten
     end
 
-    opts.on '--remove-feed NUMBER', Integer,
-            'Remove feed NUMBER.',
-            'Use --feed to show feed numbers.)' do |feed|
+    opts.on '-R', '--remove-feed INDEXES', '--remove-feeds INDEXES',  Array,
+            'Remove feeds. INDEXES is a comma separated list',
+            'of integers or ranges of indexes to remove',
+            'Use --feed to show feed numbers.)' do |indexes|
       options[:action] = :remove_feed
-      options[:feed] = feed
+      options[:indexes] = indexes.map { |index|
+        if index.include? '-'
+          Range.new(*index.split('-', 2).map {|n| Integer n}).to_a
+        else
+          Integer index
+        end
+      }.flatten
     end
 
     opts.on_tail '-h', '--help',
@@ -95,7 +102,7 @@ when :add
     Wanko.add options[:pattern]
   end
 when :add_feed
-  puts 'Not implemented'
+  Wanko.add_feed options[:url]
 when :fetch
   Wanko.fetch
 when :list
@@ -103,12 +110,12 @@ when :list
 when :remove
   Wanko.remove options[:indexes]
 when :remove_feed
-  puts 'Not implemented'
+  Wanko.remove_feeds options[:indexes]
 when :set_default_dir
   Wanko.default_dir = options[:directory]
 when :show_default_dir
   puts Wanko.default_dir
 when :show_feeds
-  puts 'Not implemented'
+  Wanko.list_feeds
 end
 

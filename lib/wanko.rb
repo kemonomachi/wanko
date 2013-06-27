@@ -21,6 +21,12 @@ module Wanko
     save @config, 'config'
   end
 
+  def self.add_feed(feed)
+    @config['feeds'] << feed
+    @config['feeds'] = @config['feeds'].sort
+    save @config, 'config'
+  end
+
   def self.default_dir()
     @config['default_dir']
   end
@@ -80,8 +86,21 @@ module Wanko
     Formatador.display_table rows, [:Rule, :Pattern, :Directory]
   end
 
+  def self.list_feeds()
+    rows = @config['feeds'].each_with_index.map { |feed,index|
+      {Feed: index, URL: feed}
+    }
+
+    Formatador.display_table rows, [:Feed, :URL]
+  end
+
   def self.remove(indexes)
     @config['rules'] = Hash[@config['rules'].reject.with_index {|rule,i| indexes.include? i}]
+    save @config, 'config'
+  end
+
+  def self.remove_feeds(indexes)
+    @config['feeds'] = @config['feeds'].reject.with_index {|feed,i| indexes.include? i}
     save @config, 'config'
   end
 end
