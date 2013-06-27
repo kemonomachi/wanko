@@ -36,7 +36,7 @@ else
       end
     end
 
-    opts.on '--feed [URL]',
+    opts.on '-f', '--feed [URL]', '--feeds [URL]',
             'Add a new feed to watch for updates.',
             'Show current feeds if URL not specified.' do |url|
       if url
@@ -66,7 +66,7 @@ else
       }.flatten
     end
 
-    opts.on '--remove-feed INDEXES', Array,
+    opts.on '-R', '--remove-feed INDEXES', '--remove-feeds',  Array,
             'Remove feeds. INDEXES is a comma separated list',
             'of integers or ranges of indexes to remove',
             'Use --feed to show feed numbers.)' do |indexes|
