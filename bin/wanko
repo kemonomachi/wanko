@@ -12,17 +12,14 @@ else
   opt_parser = OptionParser.new do |opts|
     opts.banner = 'Usage: wanko [action] [options]'
 
+    opts.separator ''
+    opts.separator 'Actions:' 
+
     opts.on '-a', '--add PATTERN',
             'Add a new pattern to look for when fetching.',
             'PATTERN is a case-insensitve regexp.' do |pattern|
       options[:action] = :add
       options[:pattern] = pattern
-    end
-
-    opts.on '-d', '--directory DIR',
-            'Optional target directory for fetch rules.',
-            'If not specified, the default directory is used.' do |directory|
-      options[:directory] = directory
     end
 
     opts.on '--default-dir [DIR]',
@@ -80,8 +77,20 @@ else
       }.flatten
     end
 
-    opts.on_tail '-h', '--help',
-                 'Show this message' do
+    opts.separator ''
+    opts.separator 'Options:'
+
+    opts.on '-d', '--directory DIR',
+            'Optional target directory for fetch rules.',
+            'If not specified, the default directory is used.' do |directory|
+      options[:directory] = directory
+    end
+
+    opts.separator ''
+    opts.separator 'Other:'
+
+    opts.on '-h', '--help',
+            'Show this message' do
       puts opts
       exit
     end
