@@ -87,20 +87,20 @@ module Wanko
     save read_items, 'read_items'
   end
 
-  def self.list()
-    rows = @config['rules'].each_with_index.map { |(pattern,dir),index|
-      {Rule: index, Pattern: pattern, Directory: dir}
+  def self.list(type)
+    if type == 'rules'
+      headings = [:Pattern, :Directory, :Rule]
+      order = [:Rule, :Pattern, :Directory]
+    elsif type == 'feeds'
+      headings = [:URL, :Feed]
+      order = [:Feed, :URL]
+    end
+
+    rows = @config[type].map.with_index { |*data|
+      Hash[headings.zip(data.flatten)]
     }
 
-    Formatador.display_table rows, [:Rule, :Pattern, :Directory]
-  end
-
-  def self.list_feeds()
-    rows = @config['feeds'].each_with_index.map { |feed,index|
-      {Feed: index, URL: feed}
-    }
-
-    Formatador.display_table rows, [:Feed, :URL]
+    Formatador.display_table rows, order
   end
 
   def self.remove(type, indexes)
