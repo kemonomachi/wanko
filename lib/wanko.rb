@@ -55,7 +55,6 @@ module Wanko
     read_items.default_proc = proc {|read_items,key| read_items[key] = []}
 
     rules = @config[:rules].each_with_object({}) { |(rule, dir), rules|
-      dir = File.join @config[:base_directory], dir unless dir.start_with? '/'
       rules[/#{rule}/i] = dir
     }
 
