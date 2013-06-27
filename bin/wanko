@@ -3,7 +3,7 @@
 require 'optparse'
 
 require_relative '../lib/wanko'
-require_relative '../lib/wanko/parsing'
+require_relative '../lib/wanko/parser'
 
 options = Wanko::Parser.new.parse! ARGV
 fetcher = Wanko::Fetcher.new
