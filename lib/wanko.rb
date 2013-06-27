@@ -17,6 +17,7 @@ module Wanko
 
   def self.add(rule, dir=@config['default_dir'])
     @config['rules'][rule] = File.absolute_path dir
+    @config['rules'] = Hash[@config['rules'].sort]
     save @config, 'config'
   end
 
@@ -72,7 +73,7 @@ module Wanko
   end
 
   def self.list()
-    rows = @config['rules'].sort.each_with_index.map { |(pattern,dir),index|
+    rows = @config['rules'].each_with_index.map { |(pattern,dir),index|
       {Rule: index, Pattern: pattern, Directory: dir}
     }
 
@@ -80,7 +81,7 @@ module Wanko
   end
 
   def self.remove(indexes)
-    @config['rules'] = Hash[@config['rules'].sort.reject.with_index {|rule,i| indexes.include? i}]
+    @config['rules'] = Hash[@config['rules'].reject.with_index {|rule,i| indexes.include? i}]
     save @config, 'config'
   end
 end
