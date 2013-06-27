@@ -92,28 +92,30 @@ else
   end
 end
 
+fetcher = Wanko::Fetcher.new
+
 case options[:action]
 when :add
   if options[:directory]
-    Wanko.add options[:pattern], options[:directory]
+    fetcher.add options[:pattern], options[:directory]
   else
-    Wanko.add options[:pattern]
+    fetcher.add options[:pattern]
   end
 when :add_feed
-  Wanko.add_feed options[:url]
+  fetcher.add_feed options[:url]
 when :fetch
-  Wanko.fetch
+  fetcher.fetch
 when :list
-  Wanko.list :rules
+  fetcher.list :rules
 when :remove
-  Wanko.remove :rules, options[:indexes]
+  fetcher.remove :rules, options[:indexes]
 when :remove_feed
-  Wanko.remove :feeds, options[:indexes]
+  fetcher.remove :feeds, options[:indexes]
 when :set_default_dir
-  Wanko.default_dir = options[:directory]
+  fetcher.default_dir = options[:directory]
 when :show_default_dir
-  puts Wanko.default_dir
+  puts fetcher.default_dir
 when :show_feeds
-  Wanko.list :feeds
+  fetcher.list :feeds
 end
 
