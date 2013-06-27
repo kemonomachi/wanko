@@ -9,7 +9,16 @@ require 'nokogiri'
 
 module Wanko
   @config_dir = File.join Dir.home, '.wanko'
-  @config = JSON.parse File.read(File.join @config_dir, 'config')
+
+  @config = begin
+    JSON.parse File.read(File.join @config_dir, 'config')
+  rescue Errno::ENOENT
+    {
+     'default_dir' => File.join(Dir.home, 'downloads'),
+     'feeds' => [],
+     'rules' => {}
+    }
+  end
 
   def self.save(info, filename)
     File.write File.join(@config_dir, filename), JSON.pretty_generate(info)
