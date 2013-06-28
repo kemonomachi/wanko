@@ -5,30 +5,30 @@ require 'optparse'
 require 'wanko'
 
 options = Wanko::Parser.new.parse! ARGV
-fetcher = Wanko::Fetcher.new
+client = Wanko::Client.new
 
 case options[:action]
 when :add
   if options[:directory]
-    fetcher.add options[:pattern], options[:directory]
+    client.add options[:pattern], options[:directory]
   else
-    fetcher.add options[:pattern]
+    client.add options[:pattern]
   end
 when :add_feed
-  fetcher.add_feed options[:url]
+  client.add_feed options[:url]
 when :fetch
-  fetcher.fetch
+  client.fetch
 when :list
-  fetcher.list :rules
+  client.list :rules
 when :remove
-  fetcher.remove :rules, options[:indexes]
+  client.remove :rules, options[:indexes]
 when :remove_feed
-  fetcher.remove :feeds, options[:indexes]
+  client.remove :feeds, options[:indexes]
 when :set_default_dir
-  fetcher.default_dir = options[:directory]
+  client.default_dir = options[:directory]
 when :show_default_dir
-  puts fetcher.default_dir
+  puts client.default_dir
 when :show_feeds
-  fetcher.list :feeds
+  client.list :feeds
 end
 
