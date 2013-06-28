@@ -1,56 +1,19 @@
-#!/usr/bin/ruby
-
 require 'json'
 require 'open-uri'
 require 'time'
 
-require 'formatador'
 require 'nokogiri'
 
 module Wanko
   class Fetcher
-    def initialize()
-      @config_dir = File.join Dir.home, '.wanko'
-
-      @config = begin
-        JSON.parse File.read(File.join @config_dir, 'config'), symbolize_names: true
-      rescue Errno::ENOENT
-       {
-         default_dir: File.join(Dir.home, 'downloads'),
-         feeds: [],
-        rules: {}
-        }
-      end
-    end
-
-    def save(info, filename)
-      File.write File.join(@config_dir, filename), JSON.pretty_generate(info)
-    end
-
-    def add(rule, dir=@config[:default_dir])
-      @config[:rules][rule.to_sym] = File.absolute_path dir
-      @config[:rules] = Hash[@config[:rules].sort]
-      save @config, 'config'
-    end
-
-    def add_feed(feed)
-      @config[:feeds] << feed
-      @config[:feeds] = @config[:feeds].sort
-      save @config, 'config'
-    end
-
-    def default_dir()
-      @config[:default_dir]
-    end
-
-    def default_dir=(dir)
-      @config[:default_dir] = File.absolute_path dir
-      save @config, 'config'
+    def initialize(config_dir, config)
+      @item_log = File.join config_dir, 'read_items'
+      @config = config
     end
 
     def fetch()
       read_items = begin
-        JSON.parse File.read(File.join @config_dir, 'read_items')
+        JSON.parse File.read @item_log
       rescue Errno::ENOENT
         {}
       end
@@ -86,28 +49,8 @@ module Wanko
         end
       end
 
-      save read_items, 'read_items'
-    end
-
-    def list(type)
-      if type == :rules
-        headings = [:Pattern, :Directory, :Rule]
-        order = [:Rule, :Pattern, :Directory]
-      elsif type == :feeds
-        headings = [:URL, :Feed]
-        order = [:Feed, :URL]
-      end
-
-      rows = @config[type].map.with_index { |*data|
-        Hash[headings.zip(data.flatten)]
-      }
-
-      Formatador.display_table rows, order
-    end
-
-    def remove(type, indexes)
-      @config[type] = @config[type].reject.with_index {|_,i| indexes.include? i}
-      save @config, 'config'
+      File.write @item_log, JSON.pretty_generate(read_items)
     end
   end
 end
+
