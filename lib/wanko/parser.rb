@@ -1,3 +1,5 @@
+require 'optparse'
+
 module Wanko
   class Parser
     def parse_index_list(index_list)
