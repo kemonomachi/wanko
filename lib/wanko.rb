@@ -1,3 +1,3 @@
-require_relative 'wanko/fetcher'
-require_relative 'wanko/parser'
+require 'wanko/fetcher'
+require 'wanko/parser'
 
