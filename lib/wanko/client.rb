@@ -16,7 +16,8 @@ module Wanko
         {
           default_dir: File.join(Dir.home, 'downloads'),
           feeds: [],
-          rules: {}
+          rules: {},
+          torrent_client: 'transmission'
         }
       end
     end
