@@ -5,6 +5,9 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>=1.9.2'
   spec.license = 'WTFPL'
 
+  spec.add_runtime_dependency 'formatador'
+  spec.add_runtime_dependency 'nokogiri'
+
   spec.summary = 'Simple RSS torrent downloader for Transmission'
   spec.description = <<-DESCRIPTION
     Reads RSS torrent feeds and passes download links to Transmission.
