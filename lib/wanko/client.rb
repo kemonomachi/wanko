@@ -71,6 +71,15 @@ module Wanko
       @config[type] = @config[type].reject.with_index {|_,i| indexes.include? i}
       save_config
     end
+
+    def torrent_client()
+      @config[:torrent_client]
+    end
+
+    def torrent_client=(client)
+      @config[:torrent_client] = client
+      save_config
+    end
   end
 end
 

@@ -24,8 +24,12 @@ when :remove_feed
   client.remove :feeds, options[:indexes]
 when :set_default_dir
   client.default_dir = options[:directory]
+when :set_client
+  client.torrent_client = options[:client]
 when :show_default_dir
   puts client.default_dir
+when :show_client
+  puts client.torrent_client
 when :show_feeds
   client.list :feeds
 end
