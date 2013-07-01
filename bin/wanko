@@ -1,36 +1,6 @@
 #!/usr/bin/ruby
 
-require 'wanko'
+require 'wanko/client'
 
-options = Wanko::Parser.new.parse! ARGV
-client = Wanko::Client.new
-
-case options[:action]
-when :add
-  if options[:directory]
-    client.add options[:pattern], options[:directory]
-  else
-    client.add options[:pattern]
-  end
-when :add_feed
-  client.add_feed options[:url]
-when :fetch
-  client.fetch
-when :list
-  client.list :rules
-when :remove
-  client.remove :rules, options[:indexes]
-when :remove_feed
-  client.remove :feeds, options[:indexes]
-when :set_default_dir
-  client.default_dir = options[:directory]
-when :set_client
-  client.torrent_client = options[:client]
-when :show_default_dir
-  puts client.default_dir
-when :show_client
-  puts client.torrent_client
-when :show_feeds
-  client.list :feeds
-end
+Wanko::Client.new.run! ARGV
 

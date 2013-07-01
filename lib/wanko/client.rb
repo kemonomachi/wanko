@@ -2,11 +2,14 @@ require 'json'
 
 require 'formatador'
 
-require 'wanko/fetcher'
+require 'wanko'
+require 'wanko/parser'
 
 module Wanko
   class Client
     def initialize()
+      @parser = Parser.new
+
       @config_dir = File.join Dir.home, '.wanko'
       @config_file = File.join @config_dir, 'config'
 
@@ -19,6 +22,39 @@ module Wanko
           rules: {},
           torrent_client: 'transmission'
         }
+      end
+    end
+
+    def run!(args)
+      options = @parser.parse! args
+
+      case options[:action]
+      when :add
+        if options[:directory]
+          add options[:pattern], options[:directory]
+        else
+          add options[:pattern]
+        end
+      when :add_feed
+        add_feed options[:url]
+      when :fetch
+        fetch
+      when :list
+        list :rules
+      when :remove
+        remove :rules, options[:indexes]
+      when :remove_feed
+        remove :feeds, options[:indexes]
+      when :set_default_dir
+        default_dir = options[:directory]
+      when :set_client
+        torrent_client = options[:client]
+      when :show_default_dir
+        puts default_dir
+      when :show_client
+        puts torrent_client
+      when :show_feeds
+        list :feeds
       end
     end
 
