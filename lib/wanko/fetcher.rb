@@ -37,7 +37,9 @@ module Wanko
             new_read_items = []
             matches = []
 
-            Nokogiri::XML(feed_xml).xpath('rss/channel/item').each do |item|
+            items = Nokogiri::XML(feed_xml).xpath('rss/channel/item')
+            
+            items.each do |item|
               item_id = item.at_xpath('guid').content
 
               unless read_items[url].include? item_id
@@ -46,12 +48,12 @@ module Wanko
                     matches << {link: item.at_xpath('link').content, dir: dir}
                   end
                 end
-                new_read_items << item_id
               end
+              new_read_items << item_id
             end
 
             @download_method.call matches
-            read_items[url] = (new_read_items + read_items[url]).first 50
+            read_items[url] = new_read_items
           end
 
         rescue OpenURI::HTTPError, Timeout::Error, Errno::ECONNREFUSED
