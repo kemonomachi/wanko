@@ -16,7 +16,8 @@ module Wanko
         {
           default_dir: File.join(Dir.home, 'downloads'),
           feeds: [],
-          rules: {}
+          rules: {},
+          torrent_client: 'transmission'
         }
       end
     end
@@ -68,6 +69,15 @@ module Wanko
 
     def remove(type, indexes)
       @config[type] = @config[type].reject.with_index {|_,i| indexes.include? i}
+      save_config
+    end
+
+    def torrent_client()
+      @config[:torrent_client]
+    end
+
+    def torrent_client=(client)
+      @config[:torrent_client] = client
       save_config
     end
   end

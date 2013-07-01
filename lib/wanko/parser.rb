@@ -69,6 +69,17 @@ module Wanko
           options[:indexes] = parse_index_list indexes
         end
 
+        parser.on '-T', '--torrent-client [CLIENT]',
+                  'Set the torrent client to use for downloading.',
+                  'Show current client if CLIENT not specified.' do |client|
+          if client
+            options[:action] = :set_client
+            options[:client] = client
+          else
+            options[:action] = :show_client
+          end
+        end
+
         parser.separator ''
         parser.separator 'Options:'
 
