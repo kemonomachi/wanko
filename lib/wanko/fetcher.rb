@@ -13,8 +13,10 @@ module Wanko
       @download_method = case @config[:torrent_client]
       when 'transmission'
         method :transmission
+      when 'dummy_downloader'
+        method :dummy_downloader
       else
-        raise ArgumentError, "Unknown torrent client: '#{@config['torrent_client']}'"
+        raise ArgumentError, "Unknown torrent client: '#{@config[:torrent_client]}'"
       end
     end
 
@@ -62,6 +64,18 @@ module Wanko
       end
 
       File.write @item_log, JSON.pretty_generate(read_items)
+    end
+
+    def dummy_downloader(torrents)
+      output = begin
+        JSON.parse File.read('output.json'), symbolize_names: true
+      rescue Errno::ENOENT
+        []
+      end
+
+      output += torrents
+
+      File.write 'output.json', JSON.pretty_generate(output)
     end
 
     def transmission(torrents)
