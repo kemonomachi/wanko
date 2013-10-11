@@ -1,0 +1,18 @@
+{
+  "feeds": [
+    "feed_data/tokyo_toshokan.rss",
+    "feed_data/nyaa_torrents.rss"
+  ],
+  "torrent_client": "dummy_downloader",
+  "rules": {
+    "\\[Zero-Raws\\] Toaru Kagaku no Railgun S": "to_aru_kagaku_no_railgun_s",
+    "\\[Leopard-Raws\\] Choujigen Game Neptune The Animation": "chojigen_game_neptune_the_animation",
+    "\\[Leopard-Raws\\] Rozen Maiden \(2013\)": "rozen_maiden_2013",
+    "\\[Zero-Raws\\] Servant x Service": "servant_service",
+    "\\[Leopard-Raws\\] Kami-sama no Inai Nichiyoubi": "kami-sama_no_inai_nichiyoubi",
+    "\\[Leopard-Raws\\] Senki Zesshou Symphogear G": "senki_zesshou_symphogear_g",
+    "\\[Zero-Raws\\] Hentai Ouji to Warawanai Neko": "hentai_ouji_to_warawanai_neko",
+    "\\[Leopard-Raws\\] Kitakubu Katsudou Kiroku": "kitakubu_katsudou_kiroku",
+    "\\[Leopard-Raws\\] Stella Jo-Gakuin Koutou-ka C3-bu": "stella_jogakuin_koutouka_c3-bu"
+  }
+}
