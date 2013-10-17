@@ -39,6 +39,8 @@ module Wanko
         add_feed options[:url]
       when :fetch
         fetch
+      when :help
+        puts help
       when :list
         list :rules
       when :remove
@@ -81,6 +83,10 @@ module Wanko
 
     def fetch()
       Fetcher.new(@config_dir, @config).fetch
+    end
+
+    def help()
+      @parser.help
     end
     
     def list(type)

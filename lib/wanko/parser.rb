@@ -2,6 +2,11 @@ require 'optparse'
 
 module Wanko
   class Parser
+    def initialize()
+      @options = {}
+      @opt_parser = self.build_option_parser @options
+    end
+
     def parse_index_list(index_list)
       index_list.map { |index|
         if index.include? '-'
@@ -94,7 +99,7 @@ module Wanko
 
         parser.on '-h', '--help',
                 'Show this message' do
-          puts parser
+          options[:action] = :help
         end
       end
     end
@@ -103,17 +108,17 @@ module Wanko
       if args.empty?
         {action: :fetch}
       else
-        options = {}
-        opt_parser = build_option_parser options
-
         begin
-          opt_parser.parse! args
-          options
+          @opt_parser.parse! args
+          @options
         rescue OptionParser::InvalidOption
-          puts opt_parser
-          {}
+          {action: :help}
         end
       end
+    end
+
+    def help()
+      @opt_parser.to_s
     end
   end
 end
