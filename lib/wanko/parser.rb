@@ -111,7 +111,7 @@ module Wanko
         begin
           @opt_parser.parse! args
           @options
-        rescue OptionParser::InvalidOption
+        rescue OptionParser::InvalidOption, OptionParser::MissingArgument
           {action: :help}
         end
       end
