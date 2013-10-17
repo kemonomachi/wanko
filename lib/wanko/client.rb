@@ -7,11 +7,11 @@ require 'wanko/parser'
 
 module Wanko
   class Client
-    def initialize(config_dir: File.join(Dir.home, '.wanko'))
+    def initialize(config_dir: File.join(Dir.home, '.wanko'), config_file: File.join(config_dir, 'config'))
       @parser = Parser.new
 
       @config_dir = config_dir
-      @config_file = File.join @config_dir, 'config'
+      @config_file = config_file
 
       @config = begin
         JSON.parse File.read(@config_file), symbolize_names: true
