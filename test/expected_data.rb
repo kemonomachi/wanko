@@ -251,6 +251,12 @@ module ExpectedData
       "http://www.nyaa.eu/?page=view&tid=451499",
       "http://www.nyaa.eu/?page=view&tid=451492",
       "http://www.nyaa.eu/?page=view&tid=451472"
-    ]
+    ],
+    "feed_data/dummy0" => [],
+    "feed_data/dummy1" => [],
+    "feed_data/dummy2" => [],
+    "feed_data/dummy3" => [],
+    "feed_data/dummy4" => [],
+    "feed_data/dummy5" => []
   }
 end
