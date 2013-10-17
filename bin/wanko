@@ -1,6 +1,9 @@
 #!/usr/bin/ruby
 
 require 'wanko/client'
+require 'wanko/parser'
 
-Wanko::Client.new.run! ARGV
+options = Wanko::Parser.new.parse! ARGV
+
+Wanko::Client.new.run options
 

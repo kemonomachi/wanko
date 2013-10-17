@@ -100,6 +100,7 @@ module Wanko
         parser.on '-h', '--help',
                 'Show this message' do
           self.set_action options, :help
+          options[:message] = self.help
         end
       end
     end
@@ -112,7 +113,7 @@ module Wanko
           @opt_parser.parse! args
           @options
         rescue OptionParser::InvalidOption, OptionParser::MissingArgument
-          {action: :help}
+          {action: :help, message: self.help}
         end
       end
     end

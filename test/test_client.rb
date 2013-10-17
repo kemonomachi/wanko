@@ -7,6 +7,7 @@ require 'json'
 $LOAD_PATH.unshift File.expand_path('../lib')
 
 require 'wanko/client'
+require 'wanko/parser'
 
 require_relative 'expected_data'
 
@@ -24,176 +25,133 @@ describe Wanko::Client do
     FileUtils.mv 'config/config.bak', 'config/config'
   end
 
-  describe 'when called without action' do
-    it 'fetches torrents' do
-      @client.run! []
-
-      output = JSON.parse File.read('output.json'), symbolize_names: true
-
-      output.must_equal ExpectedData::FETCH
-
-      ['output.json', File.join('config', 'read_items')].each do |f|
-        File.delete f if File.exist? f
-      end
-    end
-  end
-  
-  describe 'when called with action' do
-    ['-a', '--add'].each do |action|
-      describe "#{action} PATTERN" do
-        describe 'with a directory' do
-          it 'adds a rule' do
-            @client.run! [action, 'test', '-d', '/specified/directory']
-            config = get_config
-            config[:rules].must_include :test
-            config[:rules][:test].must_equal '/specified/directory'
-          end
+  describe 'method run' do
+    describe 'when called with action :add' do
+      describe 'with a directory' do
+        it 'adds a rule' do
+          @client.run({action: :add, pattern: 'test', directory: '/specified/directory'})
+          config = get_config
+          config[:rules].must_include :test
+          config[:rules][:test].must_equal '/specified/directory'
         end
+      end
 
-        describe 'without a directory' do
-          it 'adds a rule using the default directory' do
-            @client.run! [action, 'test']
-            config = get_config
-            config[:rules].must_include :test
-            config[:rules][:test].must_equal '/default/directory'
-          end
+      describe 'without a directory' do
+        it 'adds a rule using the default directory' do
+          @client.run({action: :add, pattern: 'test'})
+          config = get_config
+          config[:rules].must_include :test
+          config[:rules][:test].must_equal '/default/directory'
         end
       end
     end
 
-    ['-D', '--default-dir'].each do |action|
-      describe action do
-        it 'prints the default directory' do
-          out, _ = capture_io {@client.run! [action]}
-          out.rstrip.must_equal '/default/directory'
-        end
+    describe 'when called with action :add_feed' do
+      it 'adds a feed to the feed list' do
+        @client.run({action: :add_feed, url: 'testfeed'})
+        get_config[:feeds].must_include 'testfeed'
       end
+    end
 
-      describe "#{action} DIRECTORY" do
-        it 'sets the default directory' do
-          @client.run! [action, '/test/directory']
-          get_config[:default_dir].must_equal '/test/directory'
+    describe 'when called with action :fetch' do
+      it 'fetches torrents' do
+        @client.run({action: :fetch})
+
+        output = JSON.parse File.read('output.json'), symbolize_names: true
+
+        output.must_equal ExpectedData::FETCH
+
+        ['output.json', File.join('config', 'read_items')].each do |f|
+          File.delete f if File.exist? f
         end
       end
     end
 
-    ['-f', '--feed', '--feeds'].each do |action|
-      describe action do
-        it 'prints the feeds' do
-          out, _ = capture_io {@client.run! [action]}
-          out.must_match /tokyo_toshokan\.rss/
-          out.must_match /nyaa_torrents\.rss/
-        end
+    describe 'when called with action :help' do
+      it 'prints the usage message' do
+        out, _ = capture_io {
+          @client.run({action: :help, message: Wanko::Parser.new.help})
+        }
+        out.must_equal Wanko::Parser.new.help
       end
+    end
 
-      describe "#{action} URL" do
-        it 'adds URL to the feed list' do
-          @client.run! [action, 'testfeed']
-          get_config[:feeds].must_include 'testfeed'
+    describe 'when called with action :list' do
+      it 'prints the rules' do
+        out, _ = capture_io {@client.run({action: :list})}
+        out.must_match /Toaru Kagaku no Railgun S/
+        out.must_match /Hentai Ouji to Warawanai Neko/
+      end
+    end
+
+    index_tests = [[2], [1,5], [2,4,5], [1,2,5,6], [0,2,3,4,6]]
+
+    index_tests.each do |indexes|
+      describe "when called with action :remove and indexes is #{indexes}" do
+        it "removes the specified rule#{'s' if indexes.length > 1}" do
+          expected = Hash[get_config[:rules].to_a.reject.with_index {|_,i| indexes.include? i}]
+
+          @client.run({action: :remove, indexes: indexes})
+          get_config[:rules].must_equal expected
         end
       end
     end
 
-    ['-l', '--list'].each do |action|
-      describe action do
-        it 'prints the rules' do
-          out, _ = capture_io {@client.run! [action]}
-          out.must_match /Toaru Kagaku no Railgun S/
-          out.must_match /Hentai Ouji to Warawanai Neko/
+    index_tests.each do |indexes|
+      describe "when called with action :remove_feed and indexes is" do
+        it "removes the specified feed#{'s' if indexes.length > 1}" do
+          expected = get_config[:feeds].reject.with_index {|_,i| indexes.include? i}
+
+          @client.run({action: :remove_feed, indexes: indexes})
+          get_config[:feeds].must_equal expected
         end
       end
     end
 
-    index_tests = {
-      '2' => ['a single number', [2]],
-      '1,4,5' => ['a comma-separated list of numbers', [1,4,5]],
-      '2-5' => ['a range of numbers', [2,3,4,5]],
-      '0-2,5-6' => ['list of ranges', [0,1,2,5,6]],
-      '0,2-4,6' => ['a mix of single numbers and ranges', [0,2,3,4,6]]
-    }
-
-    ['-r', '--remove'].each do |action|
-      describe "#{action} INDEXES" do
-        index_tests.each do |indexes,(desc,del_indexes)|
-          describe "and INDEXES is #{desc}" do
-            it "removes the specified rule#{'s' if del_indexes.length > 1}" do
-              expected = Hash[get_config[:rules].to_a.reject.with_index {|_,i| del_indexes.include? i}]
-
-              @client.run! [action, indexes]
-              get_config[:rules].must_equal expected
-            end
-          end
-        end
+    describe 'when called with action :set_client' do
+      it "sets the torrent client" do
+        @client.run({action: :set_client, client: 'test_client'})
+        get_config[:torrent_client].must_equal 'test_client'
       end
     end
 
-    ['-R', '--remove-feed', '--remove-feeds'].each do |action|
-      describe "#{action} INDEXES" do
-        index_tests.each do |indexes,(desc,del_indexes)|
-          describe "and INDEXES is #{desc}" do
-            it "removes the specified feed#{'s' if del_indexes.length > 1}" do
-              expected = get_config[:feeds].reject.with_index {|_,i| del_indexes.include? i}
-
-              @client.run! [action, indexes]
-              get_config[:feeds].must_equal expected
-            end
-          end
-        end
+    describe 'when called with action :set_default_dir' do
+      it 'sets the default directory' do
+        @client.run({action: :set_default_dir, directory: '/test/directory'})
+        get_config[:default_dir].must_equal '/test/directory'
       end
     end
 
-    ['-T', '--torrent-client'].each do |action|
-      describe action do
-        it 'prints the client used for downloading torrents' do
-          out, _ = capture_io {@client.run! [action]}
-          out.rstrip.must_equal 'dummy_downloader'
-        end
-      end
-
-      describe "#{action} CLIENT" do
-        it "sets the torrent client" do
-          @client.run! [action, 'test_client']
-          get_config[:torrent_client].must_equal 'test_client'
-        end
+    describe 'when called with action :show_client' do
+      it 'prints the client used for downloading torrents' do
+        out, _ = capture_io {@client.run({action: :show_client})}
+        out.rstrip.must_equal 'dummy_downloader'
       end
     end
 
-    ['-h', '--help'].each do |action|
-      describe action do
-        it 'prints the usage message' do
-          out, _ = capture_io {@client.run! [action]}
-          out.must_equal @client.help
+    describe 'when called with action :show_default_dir' do
+      it 'prints the default directory' do
+        out, _ = capture_io {@client.run({action: :show_default_dir})}
+        out.rstrip.must_equal '/default/directory'
+      end
+    end
+
+    describe 'when called wiht action :show_feeds' do
+      it 'prints the feeds' do
+        out, _ = capture_io {@client.run({action: :show_feeds})}
+        out.must_match /tokyo_toshokan\.rss/
+        out.must_match /nyaa_torrents\.rss/
+      end
+    end
+
+    [:bad, 'list', [:list, :fetch], 42].each do |action|
+      describe "when called with unsupported action <#{action.inspect}>" do
+        it 'raises an ArgumentError' do
+          bad_action = proc {@client.run({action: action})}
+          bad_action.must_raise ArgumentError
         end
       end
     end
   end
-
-  describe 'when called with incomplete switches' do
-    it 'prints the usage message' do
-      ['-a', '--add', '-r', '--remove', '-R', '--remove-feed', '--remove-feeds', '-d', '--directory'].each do |switch|
-        out, _ = capture_io {@client.run! [switch]}
-        out.must_equal @client.help
-      end
-    end
-  end
-
-  describe 'when called with invalid switches' do
-    it 'prints the usage message' do
-      ['-B', '--bad-switch'].each do |switch|
-        out, _ = capture_io {@client.run! [switch]}
-        out.must_equal @client.help
-      end
-    end
-  end
-
-  describe 'when called with multiple actions' do
-    it 'prints the usage message' do
-      [['-f', '-l'], ['--list', '--feeds'], ['-T', '--list-']].each do |switches|
-        out, _ = capture_io {@client.run! switches}
-        out.must_equal @client.help
-      end
-    end
-  end
-
 end
 
