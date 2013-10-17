@@ -27,7 +27,7 @@ module Wanko
         parser.on '-a', '--add PATTERN',
                 'Add a new pattern to look for when fetching.',
                 'PATTERN is a case-insensitve regexp.' do |pattern|
-          options[:action] = :add
+          self.set_action options, :add
           options[:pattern] = pattern
         end
 
@@ -35,10 +35,10 @@ module Wanko
                 'Set the default directory for fetch rules.',
                 'Show the current default if DIR not specified.' do |directory|
           if directory
-            options[:action] = :set_default_dir
+            self.set_action options, :set_default_dir
             options[:directory] = directory
           else
-            options[:action] = :show_default_dir
+            self.set_action options, :show_default_dir
           end
         end
 
@@ -46,23 +46,23 @@ module Wanko
                 'Add a new feed to watch for updates.',
                 'Show current feeds if URL not specified.' do |url|
           if url
-            options[:action] = :add_feed
+            self.set_action options, :add_feed
             options[:url] = url
           else
-            options[:action] = :show_feeds
+            self.set_action options, :show_feeds
           end
         end
 
         parser.on '-l', '--list',
                 'Show current rules.' do
-          options[:action] = :list
+          self.set_action options, :list
         end
 
         parser.on '-r', '--remove INDEXES', Array,
                 'Remove rules. INDEXES is a comma separated list',
                 'of indexes or ranges of indexes to remove.',
                 'Use -l to show rule indexes.' do |indexes|
-          options[:action] = :remove
+          self.set_action options, :remove
           options[:indexes] = parse_index_list indexes
         end
 
@@ -70,7 +70,7 @@ module Wanko
                 'Remove feeds. INDEXES is a comma separated list',
                 'of indexes or ranges of indexes to remove',
                 'Use -f to show feed indexes.' do |indexes|
-          options[:action] = :remove_feed
+          self.set_action options, :remove_feed
           options[:indexes] = parse_index_list indexes
         end
 
@@ -78,10 +78,10 @@ module Wanko
                   'Set the torrent client to use for downloading.',
                   'Show current client if CLIENT not specified.' do |client|
           if client
-            options[:action] = :set_client
+            self.set_action options, :set_client
             options[:client] = client
           else
-            options[:action] = :show_client
+            self.set_action options, :show_client
           end
         end
 
@@ -99,7 +99,7 @@ module Wanko
 
         parser.on '-h', '--help',
                 'Show this message' do
-          options[:action] = :help
+          self.set_action options, :help
         end
       end
     end
@@ -119,6 +119,11 @@ module Wanko
 
     def help()
       @opt_parser.to_s
+    end
+
+    def set_action(options, action)
+      raise OptionParser::InvalidOption if options.has_key? :action
+      options[:action] = action
     end
   end
 end
