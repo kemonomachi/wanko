@@ -7,10 +7,10 @@ require 'wanko/parser'
 
 module Wanko
   class Client
-    def initialize()
+    def initialize(config_dir: File.join(Dir.home, '.wanko'))
       @parser = Parser.new
 
-      @config_dir = File.join Dir.home, '.wanko'
+      @config_dir = config_dir
       @config_file = File.join @config_dir, 'config'
 
       @config = begin
