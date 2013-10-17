@@ -48,11 +48,11 @@ module Wanko
       when :set_default_dir
         set_default_dir options[:directory]
       when :set_client
-        torrent_client = options[:client]
+        set_torrent_client options[:client]
       when :show_default_dir
         puts @config[:default_dir]
       when :show_client
-        puts torrent_client
+        puts @config[:torrent_client]
       when :show_feeds
         list :feeds
       end
@@ -104,11 +104,7 @@ module Wanko
       save_config
     end
 
-    def torrent_client()
-      @config[:torrent_client]
-    end
-
-    def torrent_client=(client)
+    def set_torrent_client(client)
       @config[:torrent_client] = client
       save_config
     end
