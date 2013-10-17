@@ -3,13 +3,10 @@ require 'json'
 require 'formatador'
 
 require 'wanko'
-require 'wanko/parser'
 
 module Wanko
   class Client
     def initialize(config_dir: File.join(Dir.home, '.wanko'), config_file: File.join(config_dir, 'config'))
-      @parser = Parser.new
-
       @config_dir = config_dir
       @config_file = config_file
 
@@ -25,9 +22,7 @@ module Wanko
       end
     end
 
-    def run!(args)
-      options = @parser.parse! args
-
+    def run(options)
       case options[:action]
       when :add
         if options[:directory]
@@ -40,7 +35,7 @@ module Wanko
       when :fetch
         fetch
       when :help
-        puts help
+        puts options[:message]
       when :list
         list :rules
       when :remove
@@ -57,6 +52,8 @@ module Wanko
         puts @config[:torrent_client]
       when :show_feeds
         list :feeds
+      else
+        raise ArgumentError, "Unknown action <#{options[:action]}>"
       end
     end
 
@@ -85,10 +82,6 @@ module Wanko
       Fetcher.new(@config_dir, @config).fetch
     end
 
-    def help()
-      @parser.help
-    end
-    
     def list(type)
       if type == :rules
         headings = [:Pattern, :Directory, :Rule]
