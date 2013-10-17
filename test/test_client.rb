@@ -16,11 +16,12 @@ end
 
 describe Wanko::Client do
   before do
+    FileUtils.cp 'config/config', 'config/config.bak'
     @client = Wanko::Client.new config_dir: 'config'
   end
 
   after do
-    FileUtils.cp 'config/standard_config', 'config/config'
+    FileUtils.mv 'config/config.bak', 'config/config'
   end
 
   describe 'when called without action' do
@@ -131,10 +132,6 @@ describe Wanko::Client do
         index_tests.each do |indexes,(desc,del_indexes)|
           describe "and INDEXES is #{desc}" do
             it "removes the specified feed#{'s' if del_indexes.length > 1}" do
-              5.times do |i|
-                @client.run! ['--feed', "dummy#{i}"]
-              end
-
               expected = get_config[:feeds].reject.with_index {|_,i| del_indexes.include? i}
 
               @client.run! [action, indexes]
@@ -191,7 +188,7 @@ describe Wanko::Client do
 
   describe 'when called with multiple actions' do
     it 'prints the usage message' do
-      [['-flT'], ['-f', '-l'], ['--list', '--feeds'], ['-T', '--list-']].each do |switches|
+      [['-f', '-l'], ['--list', '--feeds'], ['-T', '--list-']].each do |switches|
         out, _ = capture_io {@client.run! switches}
         out.must_equal @client.help
       end

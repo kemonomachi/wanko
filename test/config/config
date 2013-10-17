@@ -1,7 +1,13 @@
 {
   "feeds": [
     "feed_data/tokyo_toshokan.rss",
-    "feed_data/nyaa_torrents.rss"
+    "feed_data/nyaa_torrents.rss",
+    "feed_data/dummy0",
+    "feed_data/dummy1",
+    "feed_data/dummy2",
+    "feed_data/dummy3",
+    "feed_data/dummy4",
+    "feed_data/dummy5"
   ],
   "torrent_client": "dummy_downloader",
   "default_dir": "/default/directory",
