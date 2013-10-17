@@ -46,11 +46,11 @@ module Wanko
       when :remove_feed
         remove :feeds, options[:indexes]
       when :set_default_dir
-        default_dir = options[:directory]
+        set_default_dir options[:directory]
       when :set_client
         torrent_client = options[:client]
       when :show_default_dir
-        puts default_dir
+        puts @config[:default_dir]
       when :show_client
         puts torrent_client
       when :show_feeds
@@ -74,11 +74,7 @@ module Wanko
       save_config
     end
 
-    def default_dir()
-      @config[:default_dir]
-    end
-
-    def default_dir=(dir)
+    def set_default_dir(dir)
       @config[:default_dir] = File.absolute_path dir
       save_config
     end
