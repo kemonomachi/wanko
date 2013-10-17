@@ -95,7 +95,6 @@ module Wanko
         parser.on '-h', '--help',
                 'Show this message' do
           puts parser
-          exit
         end
       end
     end
@@ -112,7 +111,7 @@ module Wanko
           options
         rescue OptionParser::InvalidOption
           puts opt_parser
-          exit
+          {}
         end
       end
     end
