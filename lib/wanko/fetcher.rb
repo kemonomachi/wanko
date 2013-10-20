@@ -30,7 +30,7 @@ module Wanko
     end
 
     def fetch()
-      @config[:feeds].each do |url|
+      download @config[:feeds].map { |url|
         begin
           feed = open(url, read_timeout: 10) { |rss|
             RSS::Parser.parse rss
@@ -39,18 +39,19 @@ module Wanko
           next
         end
 
-        download feed.items.reject { |item|
+        matches = feed.items.reject { |item|
           @item_log[url].include? item.guid.content
-        }.each_with_object([]) { |item,matches|
-          @rules.each do |rule,dir|
-            matches << {link: item.link, dir: dir} if rule =~ item.title
-          end
+        }.product(@rules.to_a).select { |item,(rule,_)|
+          rule =~ item.title
+        }.map { |item,(_,dir)|
+          {link: item.link, dir: dir}
         }
 
         @item_log[url] = feed.items.map {|item| item.guid.content}
-      end
 
-    ensure
+        matches
+      }.flatten
+
       File.write @item_log_file, JSON.pretty_generate(@item_log)
     end
 
