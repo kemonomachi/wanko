@@ -9,7 +9,7 @@
     "dummy4",
     "dummy5"
   ],
-  "torrent_client": "dummy_downloader",
+  "torrent_client": "stdout",
   "default_dir": "/default/directory",
   "rules": {
     "\\[Zero-Raws\\] Toaru Kagaku no Railgun S": "to_aru_kagaku_no_railgun_s",
