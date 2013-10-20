@@ -2,7 +2,8 @@ require 'json'
 require 'open-uri'
 require 'time'
 
-require 'nokogiri'
+require 'timeout'
+require 'rss'
 
 module Wanko
   class Fetcher
@@ -39,15 +40,15 @@ module Wanko
             new_read_items = []
             matches = []
 
-            items = Nokogiri::XML(feed_xml).xpath('rss/channel/item')
+            feed = RSS::Parser.parse feed_xml
             
-            items.each do |item|
-              item_id = item.at_xpath('guid').content
+            feed.items.each do |item|
+              item_id = item.guid.content
 
               unless read_items[url].include? item_id
                 rules.each do |rule, dir|
-                  if rule =~ item.at_xpath('title').content
-                    matches << {link: item.at_xpath('link').content, dir: dir}
+                  if rule =~ item.title
+                    matches << {link: item.link, dir: dir}
                   end
                 end
               end
