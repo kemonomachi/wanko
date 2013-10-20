@@ -24,11 +24,13 @@ end
 describe Wanko::Fetcher do
   before do
     @config = JSON.parse File.read(File.join CONFIG_DIR, 'config'), symbolize_names: true
-    @config[:feeds].map! do |feed|
-      File.expand_path feed, File.dirname(__FILE__)
-    end
+
+    @config[:feeds] = @config[:feeds].map { |feed|
+      File.expand_path File.join('feed_data', feed), File.dirname(__FILE__)
+    }
 
     @fetcher = Wanko::Fetcher.new CONFIG_DIR, @config
+    @fetcher.fetch
   end
 
   after do
@@ -38,19 +40,14 @@ describe Wanko::Fetcher do
   end
 
   it 'fetches torrents according to the specified rules' do
-    @fetcher.fetch
-    
     get_output.must_equal ExpectedData::FETCH
   end
 
   it 'keeps track of read items' do
-    @fetcher.fetch
-
     get_item_log.must_equal ExpectedData::READ_ITEMS
   end
 
   it 'does not fetch torrents from already read items' do
-    @fetcher.fetch
     File.delete OUTPUT
     @fetcher.fetch
 

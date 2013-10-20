@@ -58,7 +58,7 @@ describe Wanko::Client do
     describe 'when called with action :fetch' do
       it 'fetches torrents' do
         @client.instance_variable_get(:@config)[:feeds].map! do |feed|
-          File.join File.dirname(__FILE__), feed
+          File.join File.dirname(__FILE__), 'feed_data', feed
         end
 
         @client.run({action: :fetch})
