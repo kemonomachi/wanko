@@ -2,7 +2,7 @@ require 'json'
 
 require 'formatador'
 
-require 'wanko'
+require_relative 'fetcher'
 
 module Wanko
   class Client

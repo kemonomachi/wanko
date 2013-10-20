@@ -8,8 +8,9 @@ require 'rss'
 module Wanko
   class Fetcher
     def initialize(config_dir, config)
-      @item_log = File.join config_dir, 'read_items'
+      @config_dir = config_dir
       @config = config
+      @item_log = File.join @config_dir, 'read_items'
 
       @download_method = case @config[:torrent_client]
       when 'transmission'
@@ -68,15 +69,17 @@ module Wanko
     end
 
     def dummy_downloader(torrents)
+      output_file = File.join @config_dir, 'output.json'
+
       output = begin
-        JSON.parse File.read('output.json'), symbolize_names: true
+        JSON.parse File.read(output_file), symbolize_names: true
       rescue Errno::ENOENT
         []
       end
 
       output += torrents
 
-      File.write 'output.json', JSON.pretty_generate(output)
+      File.write output_file, JSON.pretty_generate(output)
     end
 
     def transmission(torrents)
