@@ -2,6 +2,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 
 require 'json'
+require 'fileutils'
 
 require_relative '../lib/wanko/fetcher'
 
@@ -11,6 +12,7 @@ describe Wanko::Fetcher do
   before do
     @config_dir = 'config'
     @config = JSON.parse File.read(File.join @config_dir, 'config'), symbolize_names: true
+    @fetcher = Wanko::Fetcher.new @config_dir, @config
   end
 
   after do
@@ -20,7 +22,7 @@ describe Wanko::Fetcher do
   end
 
   it 'fetches torrents according to the specified rules' do
-    Wanko::Fetcher.new(@config_dir, @config).fetch
+    @fetcher.fetch
     
     output = JSON.parse File.read('output.json'), symbolize_names: true
 
@@ -28,7 +30,7 @@ describe Wanko::Fetcher do
   end
 
   it 'keeps track of read items' do
-    Wanko::Fetcher.new(@config_dir, @config).fetch
+    @fetcher.fetch
 
     read_items = JSON.parse File.read(File.join @config_dir, 'read_items')
 
@@ -36,13 +38,22 @@ describe Wanko::Fetcher do
   end
 
   it 'does not fetch torrents from already read items' do
-    Wanko::Fetcher.new(@config_dir, @config).fetch
+    @fetcher.fetch
     File.delete 'output.json'
-    Wanko::Fetcher.new(@config_dir, @config).fetch
+    @fetcher.fetch
 
     output = JSON.parse File.read('output.json'), symbolize_names: true
 
     output.must_equal []
+  end
+
+  it 'can handle new feeds' do
+    @config[:feeds] << 'feed_data/new_dummy'
+    @fetcher.fetch
+
+    read_items = JSON.parse File.read(File.join @config_dir, 'read_items')
+
+    read_items.must_include 'feed_data/new_dummy'
   end
 end
 
