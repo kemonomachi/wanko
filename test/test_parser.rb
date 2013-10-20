@@ -1,12 +1,9 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 
-$LOAD_PATH.unshift File.expand_path('../lib')
-
-require 'wanko/parser'
+require_relative '../lib/wanko/parser'
 
 require_relative 'expected_data'
-
 
 describe Wanko::Parser do
   before do

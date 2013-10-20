@@ -4,25 +4,27 @@ require 'minitest/pride'
 require 'fileutils'
 require 'json'
 
-$LOAD_PATH.unshift File.expand_path('../lib')
-
-require 'wanko/client'
-require 'wanko/parser'
+require_relative '../lib/wanko/client'
+require_relative '../lib/wanko/parser'
 
 require_relative 'expected_data'
 
+CONFIG_DIR = File.expand_path 'config', File.dirname(__FILE__)
+CONFIG_FILE = File.join CONFIG_DIR, 'config'
+CONFIG_BACKUP = File.join CONFIG_DIR, 'config.bak'
+
 def get_config()
-  JSON.parse File.read(File.join 'config', 'config'), symbolize_names: true
+  JSON.parse File.read(CONFIG_FILE), symbolize_names: true
 end
 
 describe Wanko::Client do
   before do
-    FileUtils.cp 'config/config', 'config/config.bak'
-    @client = Wanko::Client.new config_dir: 'config'
+    FileUtils.cp CONFIG_FILE, CONFIG_BACKUP
+    @client = Wanko::Client.new config_dir: CONFIG_DIR
   end
 
   after do
-    FileUtils.mv 'config/config.bak', 'config/config'
+    FileUtils.mv CONFIG_BACKUP, CONFIG_FILE
   end
 
   describe 'method run' do
@@ -55,13 +57,18 @@ describe Wanko::Client do
 
     describe 'when called with action :fetch' do
       it 'fetches torrents' do
+        @client.instance_variable_get(:@config)[:feeds].map! do |feed|
+          File.join File.dirname(__FILE__), feed
+        end
+
         @client.run({action: :fetch})
 
-        output = JSON.parse File.read('output.json'), symbolize_names: true
+        output_file = File.join CONFIG_DIR, 'output.json'
+        output = JSON.parse File.read(output_file), symbolize_names: true
 
         output.must_equal ExpectedData::FETCH
 
-        ['output.json', File.join('config', 'read_items')].each do |f|
+        [output_file, File.join(CONFIG_DIR, 'read_items')].each do |f|
           File.delete f if File.exist? f
         end
       end

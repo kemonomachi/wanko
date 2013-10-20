@@ -59,7 +59,7 @@ module ExpectedData
   ]
 
   READ_ITEMS = {
-    "feed_data/tokyo_toshokan.rss" => [
+    "tokyo_toshokan.rss" => [
       "http://tokyotosho.info/details.php?id=674123",
       "http://tokyotosho.info/details.php?id=674121",
       "http://tokyotosho.info/details.php?id=674120",
@@ -150,7 +150,7 @@ module ExpectedData
       "http://tokyotosho.info/details.php?id=673526",
       "http://tokyotosho.info/details.php?id=673517"
     ],
-    "feed_data/nyaa_torrents.rss" => [
+    "nyaa_torrents.rss" => [
       "http://www.nyaa.eu/?page=view&tid=452039",
       "http://www.nyaa.eu/?page=view&tid=452038",
       "http://www.nyaa.eu/?page=view&tid=452037",
@@ -252,11 +252,11 @@ module ExpectedData
       "http://www.nyaa.eu/?page=view&tid=451492",
       "http://www.nyaa.eu/?page=view&tid=451472"
     ],
-    "feed_data/dummy0" => [],
-    "feed_data/dummy1" => [],
-    "feed_data/dummy2" => [],
-    "feed_data/dummy3" => [],
-    "feed_data/dummy4" => [],
-    "feed_data/dummy5" => []
+    "dummy0" => [],
+    "dummy1" => [],
+    "dummy2" => [],
+    "dummy3" => [],
+    "dummy4" => [],
+    "dummy5" => []
   }
 end

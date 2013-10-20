@@ -8,15 +8,31 @@ require_relative '../lib/wanko/fetcher'
 
 require_relative 'expected_data'
 
+CONFIG_DIR = File.expand_path 'config', File.dirname(__FILE__)
+ITEM_LOG = File.join CONFIG_DIR, 'read_items'
+OUTPUT = File.join CONFIG_DIR, 'output.json'
+
+def get_output()
+  JSON.parse File.read(OUTPUT), symbolize_names: true
+end
+
+def get_item_log()
+  log = JSON.parse File.read(ITEM_LOG)
+  Hash[log.map {|feed,items| [File.basename(feed), items]}]
+end
+
 describe Wanko::Fetcher do
   before do
-    @config_dir = 'config'
-    @config = JSON.parse File.read(File.join @config_dir, 'config'), symbolize_names: true
-    @fetcher = Wanko::Fetcher.new @config_dir, @config
+    @config = JSON.parse File.read(File.join CONFIG_DIR, 'config'), symbolize_names: true
+    @config[:feeds].map! do |feed|
+      File.expand_path feed, File.dirname(__FILE__)
+    end
+
+    @fetcher = Wanko::Fetcher.new CONFIG_DIR, @config
   end
 
   after do
-    ['output.json', File.join(@config_dir, 'read_items')].each do |f|
+    [ITEM_LOG, OUTPUT].each do |f|
       File.delete f if File.exist? f
     end
   end
@@ -24,36 +40,29 @@ describe Wanko::Fetcher do
   it 'fetches torrents according to the specified rules' do
     @fetcher.fetch
     
-    output = JSON.parse File.read('output.json'), symbolize_names: true
-
-    output.must_equal ExpectedData::FETCH
+    get_output.must_equal ExpectedData::FETCH
   end
 
   it 'keeps track of read items' do
     @fetcher.fetch
 
-    read_items = JSON.parse File.read(File.join @config_dir, 'read_items')
-
-    read_items.must_equal ExpectedData::READ_ITEMS
+    get_item_log.must_equal ExpectedData::READ_ITEMS
   end
 
   it 'does not fetch torrents from already read items' do
     @fetcher.fetch
-    File.delete 'output.json'
+    File.delete OUTPUT
     @fetcher.fetch
 
-    output = JSON.parse File.read('output.json'), symbolize_names: true
-
-    output.must_equal []
+    get_output.must_equal []
   end
 
   it 'can handle new feeds' do
-    @config[:feeds] << 'feed_data/new_dummy'
+    new_feed = File.expand_path File.join('feed_data', 'new_dummy'), File.dirname(__FILE__)
+    @config[:feeds] << new_feed
     @fetcher.fetch
 
-    read_items = JSON.parse File.read(File.join @config_dir, 'read_items')
-
-    read_items.must_include 'feed_data/new_dummy'
+    get_item_log.must_include 'new_dummy'
   end
 end
 
