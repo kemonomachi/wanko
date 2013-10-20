@@ -58,7 +58,7 @@ module ExpectedData
     }
   ]
 
-  READ_ITEMS = {
+  ITEM_LOG = {
     "tokyo_toshokan.rss" => [
       "http://tokyotosho.info/details.php?id=674123",
       "http://tokyotosho.info/details.php?id=674121",

@@ -44,7 +44,7 @@ describe Wanko::Fetcher do
   end
 
   it 'keeps track of read items' do
-    get_item_log.must_equal ExpectedData::READ_ITEMS
+    get_item_log.must_equal ExpectedData::ITEM_LOG
   end
 
   it 'does not fetch torrents from already read items' do
