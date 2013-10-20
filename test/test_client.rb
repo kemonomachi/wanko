@@ -64,16 +64,12 @@ describe Wanko::Client do
           File.join File.dirname(__FILE__), 'feed_data', feed
         end
 
-        @client.run({action: :fetch})
-
-        output_file = File.join CONFIG_DIR, 'output.json'
-        output = JSON.parse File.read(output_file), symbolize_names: true
+        out, _ = capture_io {@client.run({action: :fetch})}
+        output = JSON.parse out, symbolize_names: true
 
         output.must_equal ExpectedData::FETCH
 
-        [output_file, File.join(CONFIG_DIR, 'read_items')].each do |f|
-          File.delete f if File.exist? f
-        end
+        File.delete File.join(CONFIG_DIR, 'read_items') rescue nil
       end
     end
 
@@ -142,7 +138,7 @@ describe Wanko::Client do
       it 'prints the client used for downloading torrents' do
         out, _ = capture_io {@client.run({action: :show_client})}
 
-        out.rstrip.must_equal 'dummy_downloader'
+        out.rstrip.must_equal 'stdout'
       end
     end
 
