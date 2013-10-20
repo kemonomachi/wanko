@@ -2,6 +2,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 
 require 'json'
+require 'fileutils'
 
 require_relative '../lib/wanko/fetcher'
 
@@ -43,6 +44,16 @@ describe Wanko::Fetcher do
     output = JSON.parse File.read('output.json'), symbolize_names: true
 
     output.must_equal []
+  end
+
+  it 'can handle new feeds' do
+    @config[:feeds] << 'feed_data/new_dummy'
+
+    Wanko::Fetcher.new(@config_dir, @config).fetch
+
+    read_items = JSON.parse File.read(File.join @config_dir, 'read_items')
+
+    read_items.must_include 'feed_data/new_dummy'
   end
 end
 
