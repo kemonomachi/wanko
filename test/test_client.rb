@@ -32,6 +32,7 @@ describe Wanko::Client do
       describe 'with a directory' do
         it 'adds a rule' do
           @client.run({action: :add, pattern: 'test', directory: '/specified/directory'})
+
           config = get_config
           config[:rules].must_include :test
           config[:rules][:test].must_equal '/specified/directory'
@@ -41,6 +42,7 @@ describe Wanko::Client do
       describe 'without a directory' do
         it 'adds a rule using the default directory' do
           @client.run({action: :add, pattern: 'test'})
+
           config = get_config
           config[:rules].must_include :test
           config[:rules][:test].must_equal '/default/directory'
@@ -51,6 +53,7 @@ describe Wanko::Client do
     describe 'when called with action :add_feed' do
       it 'adds a feed to the feed list' do
         @client.run({action: :add_feed, url: 'testfeed'})
+
         get_config[:feeds].must_include 'testfeed'
       end
     end
@@ -79,6 +82,7 @@ describe Wanko::Client do
         out, _ = capture_io {
           @client.run({action: :help, message: Wanko::Parser.new.help})
         }
+
         out.must_equal Wanko::Parser.new.help
       end
     end
@@ -86,6 +90,7 @@ describe Wanko::Client do
     describe 'when called with action :list' do
       it 'prints the rules' do
         out, _ = capture_io {@client.run({action: :list})}
+
         out.must_match /Toaru Kagaku no Railgun S/
         out.must_match /Hentai Ouji to Warawanai Neko/
       end
@@ -99,17 +104,19 @@ describe Wanko::Client do
           expected = Hash[get_config[:rules].to_a.reject.with_index {|_,i| indexes.include? i}]
 
           @client.run({action: :remove, indexes: indexes})
+
           get_config[:rules].must_equal expected
         end
       end
     end
 
     index_tests.each do |indexes|
-      describe "when called with action :remove_feed and indexes is" do
+      describe "when called with action :remove_feed and indexes is #{indexes}" do
         it "removes the specified feed#{'s' if indexes.length > 1}" do
           expected = get_config[:feeds].reject.with_index {|_,i| indexes.include? i}
 
           @client.run({action: :remove_feed, indexes: indexes})
+
           get_config[:feeds].must_equal expected
         end
       end
@@ -118,6 +125,7 @@ describe Wanko::Client do
     describe 'when called with action :set_client' do
       it "sets the torrent client" do
         @client.run({action: :set_client, client: 'test_client'})
+
         get_config[:torrent_client].must_equal 'test_client'
       end
     end
@@ -125,6 +133,7 @@ describe Wanko::Client do
     describe 'when called with action :set_default_dir' do
       it 'sets the default directory' do
         @client.run({action: :set_default_dir, directory: '/test/directory'})
+
         get_config[:default_dir].must_equal '/test/directory'
       end
     end
@@ -132,6 +141,7 @@ describe Wanko::Client do
     describe 'when called with action :show_client' do
       it 'prints the client used for downloading torrents' do
         out, _ = capture_io {@client.run({action: :show_client})}
+
         out.rstrip.must_equal 'dummy_downloader'
       end
     end
@@ -139,6 +149,7 @@ describe Wanko::Client do
     describe 'when called with action :show_default_dir' do
       it 'prints the default directory' do
         out, _ = capture_io {@client.run({action: :show_default_dir})}
+
         out.rstrip.must_equal '/default/directory'
       end
     end
@@ -146,6 +157,7 @@ describe Wanko::Client do
     describe 'when called wiht action :show_feeds' do
       it 'prints the feeds' do
         out, _ = capture_io {@client.run({action: :show_feeds})}
+
         out.must_match /tokyo_toshokan\.rss/
         out.must_match /nyaa_torrents\.rss/
       end
@@ -155,6 +167,7 @@ describe Wanko::Client do
       describe "when called with unsupported action <#{action.inspect}>" do
         it 'raises an ArgumentError' do
           bad_action = proc {@client.run({action: action})}
+
           bad_action.must_raise ArgumentError
         end
       end
