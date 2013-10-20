@@ -1,71 +1,57 @@
 require 'json'
 require 'open-uri'
-require 'time'
-
-require 'timeout'
 require 'rss'
+require 'timeout'
 
 module Wanko
   class Fetcher
     def initialize(config_dir, config)
       @config_dir = config_dir
       @config = config
-      @item_log = File.join @config_dir, 'read_items'
+      @item_log_file = File.join @config_dir, 'read_items'
 
-      @download_method = case @config[:torrent_client]
+      @item_log = begin
+        JSON.parse File.read @item_log_file
+      rescue Errno::ENOENT
+        {}
+      end
+      @item_log.default_proc = proc {|item_log,url| item_log[url] = []}
+
+      @rules = Hash[@config[:rules].map {|rule, dir| [/#{rule}/i, dir]}]
+
+      case @config[:torrent_client]
       when 'transmission'
-        method :transmission
+        alias :download :transmission
       when 'dummy_downloader'
-        method :dummy_downloader
+        alias :download :dummy_downloader
       else
         raise ArgumentError, "Unknown torrent client: '#{@config[:torrent_client]}'"
       end
     end
 
     def fetch()
-      read_items = begin
-        JSON.parse File.read @item_log
-      rescue Errno::ENOENT
-        {}
-      end
-
-      read_items.default_proc = proc {|read_items,key| read_items[key] = []}
-
-      rules = @config[:rules].each_with_object({}) { |(rule, dir), rules|
-        rules[/#{rule}/i] = dir
-      }
-
       @config[:feeds].each do |url|
         begin
-          open url, read_timeout: 10 do |feed_xml|
-            new_read_items = []
-            matches = []
-
-            feed = RSS::Parser.parse feed_xml
-            
-            feed.items.each do |item|
-              item_id = item.guid.content
-
-              unless read_items[url].include? item_id
-                rules.each do |rule, dir|
-                  if rule =~ item.title
-                    matches << {link: item.link, dir: dir}
-                  end
-                end
-              end
-              new_read_items << item_id
-            end
-
-            @download_method.call matches
-            read_items[url] = new_read_items
-          end
-
+          feed = open(url, read_timeout: 10) { |rss|
+            RSS::Parser.parse rss
+          }
         rescue OpenURI::HTTPError, Timeout::Error, Errno::ECONNREFUSED
           next
         end
+
+        download feed.items.reject { |item|
+          @item_log[url].include? item.guid.content
+        }.each_with_object([]) { |item,matches|
+          @rules.each do |rule,dir|
+            matches << {link: item.link, dir: dir} if rule =~ item.title
+          end
+        }
+
+        @item_log[url] = feed.items.map {|item| item.guid.content}
       end
 
-      File.write @item_log, JSON.pretty_generate(read_items)
+    ensure
+      File.write @item_log_file, JSON.pretty_generate(@item_log)
     end
 
     def dummy_downloader(torrents)
