@@ -21,13 +21,13 @@ module Wanko
 
       @rules = Hash[@config[:rules].map {|rule, dir| [/#{rule}/i, dir]}]
 
-      case @config[:torrent_client]
+      case @config[:torrent_client][:name]
       when 'transmission'
         extend Wanko::Downloaders::Transmission
       when 'stdout'
         extend Wanko::Downloaders::Stdout
       else
-        raise ArgumentError, "Unknown torrent client: '#{@config[:torrent_client]}'"
+        raise ArgumentError, "Unknown torrent client: '#{@config[:torrent_client][:name]}'"
       end
     end
 
