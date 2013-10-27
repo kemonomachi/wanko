@@ -17,7 +17,7 @@ module Wanko
           default_dir: File.join(Dir.home, 'downloads'),
           feeds: [],
           rules: {},
-          torrent_client: 'transmission'
+          torrent_client: {name: 'stdout'}
         }
       end
     end
@@ -49,7 +49,7 @@ module Wanko
       when :show_default_dir
         puts @config[:default_dir]
       when :show_client
-        puts @config[:torrent_client]
+        puts @config[:torrent_client][:name]
       when :show_feeds
         list :feeds
       else
@@ -104,7 +104,7 @@ module Wanko
     end
 
     def set_torrent_client(client)
-      @config[:torrent_client] = client
+      @config[:torrent_client][:name] = client
       save_config
     end
   end

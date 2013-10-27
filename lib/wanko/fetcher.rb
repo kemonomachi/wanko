@@ -3,6 +3,8 @@ require 'open-uri'
 require 'rss'
 require 'timeout'
 
+require_relative 'downloaders'
+
 module Wanko
   class Fetcher
     def initialize(config_dir, config)
@@ -19,13 +21,13 @@ module Wanko
 
       @rules = Hash[@config[:rules].map {|rule, dir| [/#{rule}/i, dir]}]
 
-      case @config[:torrent_client]
+      case @config[:torrent_client][:name]
       when 'transmission'
-        alias :download :transmission
+        extend Wanko::Downloaders::Transmission
       when 'stdout'
-        alias :download :stdout
+        extend Wanko::Downloaders::Stdout
       else
-        raise ArgumentError, "Unknown torrent client: '#{@config[:torrent_client]}'"
+        raise ArgumentError, "Unknown torrent client: '#{@config[:torrent_client][:name]}'"
       end
     end
 
@@ -53,16 +55,6 @@ module Wanko
       }.flatten
 
       File.write @item_log_file, JSON.pretty_generate(@item_log)
-    end
-
-    def stdout(torrents)
-      $stdout.write JSON.pretty_generate(torrents)
-    end
-
-    def transmission(torrents)
-      torrents.each do |torrent|
-        %x(transmission-remote -a "#{torrent[:link]}" -w "#{torrent[:dir]}")
-      end
     end
   end
 end

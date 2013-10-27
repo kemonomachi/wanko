@@ -120,9 +120,9 @@ describe Wanko::Client do
 
     describe 'when called with action :set_client' do
       it "sets the torrent client" do
-        @client.run({action: :set_client, client: 'test_client'})
+        @client.run({action: :set_client, client: 'transmission'})
 
-        get_config[:torrent_client].must_equal 'test_client'
+        get_config[:torrent_client].must_equal({name: 'transmission'})
       end
     end
 
