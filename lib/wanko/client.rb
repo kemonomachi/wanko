@@ -104,7 +104,7 @@ module Wanko
     end
 
     def set_torrent_client(client)
-      @config[:torrent_client][:name] = client
+      @config[:torrent_client] = {name: client}
       save_config
     end
   end
