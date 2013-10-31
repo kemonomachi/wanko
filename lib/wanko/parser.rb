@@ -4,40 +4,27 @@ module Wanko
   class Parser
     def initialize()
       @options = {}
-      @opt_parser = self.build_option_parser @options
-    end
 
-    def parse_index_list(index_list)
-      index_list.map { |index|
-        if index.include? '-'
-          Range.new(*index.split('-', 2).map {|n| Integer n}).to_a
-        else
-          Integer index
-        end
-      }.flatten
-    end
-
-    def build_option_parser(options)
-      OptionParser.new do |parser|
+      @opt_parser = OptionParser.new do |parser|
         parser.banner = 'Usage: wanko [action]' 
 
         parser.separator ''
         parser.separator 'Actions:' 
 
         parser.on '-D', '--default-dir', 'Show default directory.' do
-          self.set_action options, :show_default_dir
+          self.set_action @options, :show_default_dir
         end
 
         parser.on '-f', '--feed', '--feeds', 'Show registered feeds.' do
-          self.set_action options, :show_feeds
+          self.set_action @options, :show_feeds
         end
 
         parser.on '-l', '--list', 'Show current rules.' do
-          self.set_action options, :list
+          self.set_action @options, :list
         end
 
         parser.on '-T', '--torrent-client', 'Show torrent client info.' do
-          self.set_action options, :show_client
+          self.set_action @options, :show_client
         end
 
         parser.separator ''
@@ -45,8 +32,8 @@ module Wanko
 
         parser.on '-h', '--help',
                 'Show this message' do
-          self.set_action options, :help
-          options[:message] = self.help
+          self.set_action @options, :help
+          @options[:message] = self.help
         end
       end
     end
@@ -58,7 +45,7 @@ module Wanko
         begin
           @opt_parser.parse! args
           @options
-        rescue OptionParser::InvalidOption, OptionParser::MissingArgument
+        rescue OptionParser::InvalidOption
           {action: :help, message: self.help}
         end
       end
