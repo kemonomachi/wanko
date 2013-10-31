@@ -13,10 +13,6 @@ CONFIG_DIR = File.expand_path 'config', File.dirname(__FILE__)
 CONFIG_FILE = File.join CONFIG_DIR, 'config'
 CONFIG_BACKUP = File.join CONFIG_DIR, 'config.bak'
 
-def get_config()
-  JSON.parse File.read(CONFIG_FILE), symbolize_names: true
-end
-
 describe Wanko::Client do
   before do
     FileUtils.cp CONFIG_FILE, CONFIG_BACKUP
@@ -28,36 +24,6 @@ describe Wanko::Client do
   end
 
   describe 'method run' do
-    describe 'when called with action :add' do
-      describe 'with a directory' do
-        it 'adds a rule' do
-          @client.run({action: :add, pattern: 'test', directory: '/specified/directory'})
-
-          config = get_config
-          config[:rules].must_include :test
-          config[:rules][:test].must_equal '/specified/directory'
-        end
-      end
-
-      describe 'without a directory' do
-        it 'adds a rule using the default directory' do
-          @client.run({action: :add, pattern: 'test'})
-
-          config = get_config
-          config[:rules].must_include :test
-          config[:rules][:test].must_equal '/default/directory'
-        end
-      end
-    end
-
-    describe 'when called with action :add_feed' do
-      it 'adds a feed to the feed list' do
-        @client.run({action: :add_feed, url: 'testfeed'})
-
-        get_config[:feeds].must_include 'testfeed'
-      end
-    end
-
     describe 'when called with action :fetch' do
       it 'fetches torrents' do
         @client.instance_variable_get(:@config)[:feeds].map! do |feed|
@@ -89,48 +55,6 @@ describe Wanko::Client do
 
         out.must_match /Toaru Kagaku no Railgun S/
         out.must_match /Hentai Ouji to Warawanai Neko/
-      end
-    end
-
-    index_tests = [[2], [1,5], [2,4,5], [1,2,5,6], [0,2,3,4,6]]
-
-    index_tests.each do |indexes|
-      describe "when called with action :remove and indexes is #{indexes}" do
-        it "removes the specified rule#{'s' if indexes.length > 1}" do
-          expected = Hash[get_config[:rules].to_a.reject.with_index {|_,i| indexes.include? i}]
-
-          @client.run({action: :remove, indexes: indexes})
-
-          get_config[:rules].must_equal expected
-        end
-      end
-    end
-
-    index_tests.each do |indexes|
-      describe "when called with action :remove_feed and indexes is #{indexes}" do
-        it "removes the specified feed#{'s' if indexes.length > 1}" do
-          expected = get_config[:feeds].reject.with_index {|_,i| indexes.include? i}
-
-          @client.run({action: :remove_feed, indexes: indexes})
-
-          get_config[:feeds].must_equal expected
-        end
-      end
-    end
-
-    describe 'when called with action :set_client' do
-      it "sets the torrent client" do
-        @client.run({action: :set_client, client: 'transmission'})
-
-        get_config[:torrent_client].must_equal({name: 'transmission'})
-      end
-    end
-
-    describe 'when called with action :set_default_dir' do
-      it 'sets the default directory' do
-        @client.run({action: :set_default_dir, directory: '/test/directory'})
-
-        get_config[:default_dir].must_equal '/test/directory'
       end
     end
 

@@ -24,28 +24,12 @@ module Wanko
 
     def run(options)
       case options[:action]
-      when :add
-        if options[:directory]
-          add options[:pattern], options[:directory]
-        else
-          add options[:pattern]
-        end
-      when :add_feed
-        add_feed options[:url]
       when :fetch
         fetch
       when :help
         puts options[:message]
       when :list
         list :rules
-      when :remove
-        remove :rules, options[:indexes]
-      when :remove_feed
-        remove :feeds, options[:indexes]
-      when :set_default_dir
-        set_default_dir options[:directory]
-      when :set_client
-        set_torrent_client options[:client]
       when :show_default_dir
         puts @config[:default_dir]
       when :show_client
@@ -59,23 +43,6 @@ module Wanko
 
     def save_config()
       File.write @config_file, JSON.pretty_generate(@config)
-    end
-
-    def add(rule, dir=@config[:default_dir])
-      @config[:rules][rule.to_sym] = File.absolute_path dir
-      @config[:rules] = Hash[@config[:rules].sort]
-      save_config
-    end
-
-    def add_feed(feed)
-      @config[:feeds] << feed
-      @config[:feeds] = @config[:feeds].sort
-      save_config
-    end
-
-    def set_default_dir(dir)
-      @config[:default_dir] = File.absolute_path dir
-      save_config
     end
 
     def fetch()
@@ -96,16 +63,6 @@ module Wanko
       }
 
       Formatador.display_table rows, order
-    end
-
-    def remove(type, indexes)
-      @config[type] = @config[type].reject.with_index {|_,i| indexes.include? i}
-      save_config
-    end
-
-    def set_torrent_client(client)
-      @config[:torrent_client] = {name: client}
-      save_config
     end
   end
 end
