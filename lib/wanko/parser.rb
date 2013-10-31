@@ -32,8 +32,8 @@ module Wanko
 
         parser.on '-h', '--help',
                 'Show this message' do
-          self.set_action @options, :help
-          @options[:message] = self.help
+          puts parser
+          @options[:help] = true
         end
       end
     end
@@ -44,15 +44,12 @@ module Wanko
       else
         begin
           @opt_parser.parse! args
-          @options
         rescue OptionParser::InvalidOption
-          {action: :help, message: self.help}
+          puts @opt_parser
+          @options[:help] = true
         end
+        @options
       end
-    end
-
-    def help()
-      @opt_parser.to_s
     end
 
     def set_action(options, action)

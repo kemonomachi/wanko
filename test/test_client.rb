@@ -39,16 +39,6 @@ describe Wanko::Client do
       end
     end
 
-    describe 'when called with action :help' do
-      it 'prints the usage message' do
-        out, _ = capture_io {
-          @client.run({action: :help, message: Wanko::Parser.new.help})
-        }
-
-        out.must_equal Wanko::Parser.new.help
-      end
-    end
-
     describe 'when called with action :list' do
       it 'prints the rules' do
         out, _ = capture_io {@client.run({action: :list})}

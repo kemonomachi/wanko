@@ -51,30 +51,20 @@ describe Wanko::Parser do
 
     ['-h', '--help'].each do |action|
       describe "when called with action #{action}" do
-        it 'signals printing of the help message' do
-          result = @parser.parse! [action]
+        it 'prints the help message' do
+          out, _ = capture_io {@parser.parse! [action]}
 
-          result.must_equal({action: :help, message: @parser.help})
+          out.must_equal @parser.instance_variable_get(:@opt_parser).to_s
         end
       end
     end
 
     describe 'when called with invalid switches' do
-      it 'signals printing of the help message' do
+      it 'prints the help message' do
         ['-B', '--bad-switch'].each do |switch|
-          result = @parser.parse! [switch]
+          out, _ = capture_io {@parser.parse! [switch]}
 
-          result.must_equal({action: :help, message: @parser.help})
-        end
-      end
-    end
-
-    describe 'when called with multiple actions' do
-      it 'signals printing of the help message' do
-        [['-f', '-l'], ['--list', '--feeds'], ['-T', '--list'], ['-D', '-D']].each do |switches|
-          result = @parser.parse! switches
-
-          result.must_equal({action: :help, message: @parser.help})
+          out.must_equal @parser.instance_variable_get(:@opt_parser).to_s
         end
       end
     end

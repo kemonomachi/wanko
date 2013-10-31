@@ -26,8 +26,6 @@ module Wanko
       case options[:action]
       when :fetch
         fetch
-      when :help
-        puts options[:message]
       when :list
         list :rules
       when :show_default_dir
