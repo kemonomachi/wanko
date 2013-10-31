@@ -22,20 +22,22 @@ module Wanko
       end
     end
 
-    def run(options)
-      case options[:action]
-      when :fetch
-        fetch
-      when :list
-        list :rules
-      when :show_default_dir
-        puts @config[:default_dir]
-      when :show_client
-        puts @config[:torrent_client][:name]
-      when :show_feeds
-        list :feeds
-      else
-        raise ArgumentError, "Unknown action <#{options[:action]}>"
+    def run(actions)
+      actions.each do |action|
+        case action
+        when :fetch
+          fetch
+        when :list
+          list :rules
+        when :show_default_dir
+          puts @config[:default_dir]
+        when :show_client
+          puts @config[:torrent_client][:name]
+        when :show_feeds
+          list :feeds
+        else
+          raise ArgumentError, "Unknown action <#{action}>"
+        end
       end
     end
 

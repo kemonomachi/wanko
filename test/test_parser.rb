@@ -13,14 +13,14 @@ describe Wanko::Parser do
   describe 'method parse!' do
     describe 'when called without action' do
       it 'signals fetching' do
-        @parser.parse!([]).must_equal({action: :fetch})
+        @parser.parse!([]).must_equal({actions: [:fetch]})
       end
     end
     
     ['-D', '--default-dir'].each do |action|
       describe "when called with action #{action}" do
         it 'signals printing of the default directory' do
-          @parser.parse!([action]).must_equal({action: :show_default_dir})
+          @parser.parse!([action]).must_equal({actions: [:show_default_dir]})
         end
       end
     end
@@ -28,7 +28,7 @@ describe Wanko::Parser do
     ['-f', '--feed', '--feeds'].each do |action|
       describe "when called with action #{action}" do
         it 'signals printing of the feeds' do
-          @parser.parse!([action]).must_equal({action: :show_feeds})
+          @parser.parse!([action]).must_equal({actions: [:show_feeds]})
         end
       end
     end
@@ -36,7 +36,7 @@ describe Wanko::Parser do
     ['-l', '--list'].each do |action|
       describe "when called with action #{action}" do
         it 'signals printing of the rules' do
-          @parser.parse!([action]).must_equal({action: :list})
+          @parser.parse!([action]).must_equal({actions: [:list]})
         end
       end
     end
@@ -44,7 +44,7 @@ describe Wanko::Parser do
     ['-T', '--torrent-client'].each do |action|
       describe "when called with action #{action}" do
         it 'signals printing of the client used for downloading torrents' do
-          @parser.parse!([action]).must_equal({action: :show_client})
+          @parser.parse!([action]).must_equal({actions: [:show_client]})
         end
       end
     end

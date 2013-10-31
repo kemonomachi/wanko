@@ -5,5 +5,5 @@ require 'wanko/parser'
 
 options = Wanko::Parser.new.parse! ARGV
 
-Wanko::Client.new.run options unless options[:help]
+Wanko::Client.new.run options[:actions] unless options[:help]
 

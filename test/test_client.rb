@@ -30,7 +30,7 @@ describe Wanko::Client do
           File.join File.dirname(__FILE__), 'feed_data', feed
         end
 
-        out, _ = capture_io {@client.run({action: :fetch})}
+        out, _ = capture_io {@client.run [:fetch]}
         output = JSON.parse out, symbolize_names: true
 
         output.must_equal ExpectedData::FETCH
@@ -41,7 +41,7 @@ describe Wanko::Client do
 
     describe 'when called with action :list' do
       it 'prints the rules' do
-        out, _ = capture_io {@client.run({action: :list})}
+        out, _ = capture_io {@client.run [:list]}
 
         out.must_match /Toaru Kagaku no Railgun S/
         out.must_match /Hentai Ouji to Warawanai Neko/
@@ -50,7 +50,7 @@ describe Wanko::Client do
 
     describe 'when called with action :show_client' do
       it 'prints the client used for downloading torrents' do
-        out, _ = capture_io {@client.run({action: :show_client})}
+        out, _ = capture_io {@client.run [:show_client]}
 
         out.rstrip.must_equal 'stdout'
       end
@@ -58,7 +58,7 @@ describe Wanko::Client do
 
     describe 'when called with action :show_default_dir' do
       it 'prints the default directory' do
-        out, _ = capture_io {@client.run({action: :show_default_dir})}
+        out, _ = capture_io {@client.run [:show_default_dir]}
 
         out.rstrip.must_equal '/default/directory'
       end
@@ -66,17 +66,17 @@ describe Wanko::Client do
 
     describe 'when called wiht action :show_feeds' do
       it 'prints the feeds' do
-        out, _ = capture_io {@client.run({action: :show_feeds})}
+        out, _ = capture_io {@client.run [:show_feeds]}
 
         out.must_match /tokyo_toshokan\.rss/
         out.must_match /nyaa_torrents\.rss/
       end
     end
 
-    [:bad, 'list', [:list, :fetch], 42].each do |action|
+    [:bad, 'list', 42].each do |action|
       describe "when called with unsupported action <#{action.inspect}>" do
         it 'raises an ArgumentError' do
-          bad_action = proc {@client.run({action: action})}
+          bad_action = proc {@client.run [action]}
 
           bad_action.must_raise ArgumentError
         end

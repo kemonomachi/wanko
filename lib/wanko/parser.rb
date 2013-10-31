@@ -3,28 +3,28 @@ require 'optparse'
 module Wanko
   class Parser
     def initialize()
-      @options = {}
+      @options = {actions: []}
 
       @opt_parser = OptionParser.new do |parser|
-        parser.banner = 'Usage: wanko [action]' 
+        parser.banner = 'Usage: wanko [action] ...' 
 
         parser.separator ''
         parser.separator 'Actions:' 
 
         parser.on '-D', '--default-dir', 'Show default directory.' do
-          self.set_action @options, :show_default_dir
+          @options[:actions] << :show_default_dir
         end
 
         parser.on '-f', '--feed', '--feeds', 'Show registered feeds.' do
-          self.set_action @options, :show_feeds
+          @options[:actions] << :show_feeds
         end
 
         parser.on '-l', '--list', 'Show current rules.' do
-          self.set_action @options, :list
+          @options[:actions] << :list
         end
 
         parser.on '-T', '--torrent-client', 'Show torrent client info.' do
-          self.set_action @options, :show_client
+          @options[:actions] << :show_client
         end
 
         parser.separator ''
@@ -40,7 +40,7 @@ module Wanko
     
     def parse!(args)
       if args.empty?
-        {action: :fetch}
+        @options[:actions] << :fetch
       else
         begin
           @opt_parser.parse! args
@@ -48,14 +48,11 @@ module Wanko
           puts @opt_parser
           @options[:help] = true
         end
-        @options
       end
+
+      @options
     end
 
-    def set_action(options, action)
-      raise OptionParser::InvalidOption if options.has_key? :action
-      options[:action] = action
-    end
   end
 end
 
