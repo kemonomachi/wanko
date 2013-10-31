@@ -26,7 +26,7 @@ module Wanko
       actions.each do |action|
         case action
         when :fetch
-          fetch
+          Fetcher.new(@config_dir, @config).fetch
         when :list
           list :rules
         when :show_default_dir
@@ -39,14 +39,6 @@ module Wanko
           raise ArgumentError, "Unknown action <#{action}>"
         end
       end
-    end
-
-    def save_config()
-      File.write @config_file, JSON.pretty_generate(@config)
-    end
-
-    def fetch()
-      Fetcher.new(@config_dir, @config).fetch
     end
 
     def list(type)
