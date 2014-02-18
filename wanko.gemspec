@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name = 'wanko'
-  spec.version = '0.0.0'
+  spec.version = '0.1.0'
   spec.date = Time.now.utc.strftime('%Y-%m-%d')
   spec.required_ruby_version = '>=2.0.0'
   spec.license = 'WTFPL'
@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.author = 'Ookami Kenrou'
   spec.email = 'ookamikenrou@gmail.com'
+  spec.homepage = 'https://github.com/kemonomachi/wanko'
 
   spec.files = Dir['lib/**/*.rb'] + ['bin/wanko', 'LICENSE', 'README']
   spec.executables = ['wanko']
