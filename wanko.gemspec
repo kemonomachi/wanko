@@ -5,21 +5,19 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>=2.0.0'
   spec.license = 'WTFPL'
 
-  spec.add_runtime_dependency 'formatador'
-
-  spec.summary = 'Simple RSS torrent downloader for Transmission'
+  spec.summary = 'RSS Torrent Fetcher'
   spec.description = <<-DESCRIPTION
-    Reads RSS torrent feeds and passes download links to Transmission.
-    Rules for which items to download are specified as regexps.
-    Can also print the links to stdout.
-    No built in daemon, run manually or as a cron job.
+    Fetches torrent file links from RSS feeds based on user-specified rules. The
+    links can be printed to stdout or sent to Transmission for download, or the
+    torrent files can be downloaded to a watchdir for processing by other torrent
+    clients.
   DESCRIPTION
   spec.requirements << 'Transmission bittorrent client (optional)'
 
   spec.author = 'Ookami Kenrou'
   spec.email = 'ookamikenrou@gmail.com'
 
-  spec.files = Dir['lib/**/*.rb'] + ['bin/wanko', 'LICENSE']
+  spec.files = Dir['lib/**/*.rb'] + ['bin/wanko', 'LICENSE', 'README']
   spec.executables = ['wanko']
 end
 

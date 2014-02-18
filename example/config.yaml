@@ -1,0 +1,56 @@
+---
+# Example config file for wanko, RSS Torrent Fetcher
+#
+# This file is written in YAML, so correct indentation is important.
+# Information about the YAML format can be found at http://www.yaml.org/
+
+# RSS feeds to scan for torrents
+feeds:
+  - http://www.example.com/rss
+  - http://www.example.org/more_rss
+
+# Base directory for rules with relative or omitted 'dir' options. Should be
+# an absolute path.
+base_dir: '/home/example/downloads'
+
+# Print fetched links to stdout.
+# format can be yaml, json or plain. yaml and json print torrent name, link
+# and download directory. plain only prints the links, separated by newlines.
+fetcher:
+  name: stdout
+  format: yaml
+
+## Send torrent links to a Transmission daemon for downloading.
+## Options correspond to transmission-daemon config options and can be omitted
+## if the default values are used.
+#fetcher:
+#  name: transmission
+#  host: 127.0.0.1
+#  port: 9091
+#  path: '/transmission/'
+#  user: yuki
+#  password: sinzite
+
+## Download torrent files to a directory.
+## Files are downloaded to the directory specified in the matching rule, or to
+## the base directory if the rule doesn't specify a directory.
+#fetcher:
+#  name: watchdir
+
+# Rules for witch torrents to fetch
+# Regexen are matched from the start of the title of each RSS item. If an item
+# matches, the torrent is fetched to the matching rule's directory. Ruby regex
+# syntax is used. Info can be found at http://www.ruby-doc.org/core/Regexp.html
+# and regexen can be tested directly at http://rubular.com/.
+#
+# If 'dir' is omitted, the rule's directory is set to the base directory.
+# If 'dir' is a relative path, it is considered relative to the base directory.
+rules:
+  - regex: Example Podcast
+  
+  - regex: '.*\[FOSS\].*'
+    dir: foss/new
+
+  - regex: '\[INDIE\] Colonel Panic and the Segfaults'
+    dir: '/data/music/colonel_panic_and_the_segfaults'
+

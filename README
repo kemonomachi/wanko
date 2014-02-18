@@ -1,0 +1,37 @@
+Wanko - RSS Torrent Fetcher
+
+Description
+-----------
+
+Fetches torrent file links from RSS feeds based on user-specified rules. The
+links can be printed to stdout or sent to Transmission for download, or the
+torrent files can be downloaded to a watchdir for processing by other torrent
+clients.
+
+Usage
+-----
+
+    wanko [-c DIR]
+
+The optional -c switch specifies the configuration directory, which defaults to
+$HOME/.wanko.
+
+Can be run manually, but creating a cron job to run it at regular intervals is
+recommended. It is not a daemon.
+
+Configuration
+-------------
+
+The config file is named 'config.yaml'. The example folder contains a full
+example config. RSS feeds, default fetch directory, fetch method and rules can
+be specified. Regexen are used to match torrents against rules.
+
+The config directory also holds 'history.yaml', which contains already read RSS
+items. This prevents fetching the same torrent multiple times.
+
+About the Name
+--------------
+
+Wanko (わんこ) is Japanese for 'doggy'. Because it's small and it fetches
+stuff for you.
+
