@@ -42,7 +42,7 @@ module Wanko
       feed = Read.feed(url) or next [[], {}]
 
       [
-        match(feed, rules, Hash history[url]),
+        match(feed, rules, Array(history[url])),
         {url => feed.items.map {|item| item.guid.content}}
       ]
     }.transpose
