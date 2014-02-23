@@ -66,7 +66,7 @@ class TestFetch < MiniTest::Unit::TestCase
 
     transmission = Mock::Transmission.new
 
-    Wanko::Fetch.send_transmission_requests transmission, *requests
+    Wanko::Fetch.send_transmission_requests transmission, requests
 
     assert_equal transmission.requests.length, 6
     assert_same transmission.requests[0], transmission.requests[1]

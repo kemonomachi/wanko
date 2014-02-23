@@ -101,34 +101,32 @@ module Wanko
       requests = torrents.map {|torrent| make_post_request url, make_transmission_rpc_command(torrent), auth}
 
       Net::HTTP.start url.host, url.port do |transmission|
-        send_transmission_requests transmission, *requests
+        send_transmission_requests transmission, requests
       end
     end
 
-    # Internal: Recursively send requests to a Transmission daemon. If a
-    # 409 Conflict response is recieved, update the 'X-transmission-Session-Id'
-    # header of the request and resend it.
+    # Internal: Send requests to a Transmission daemon. If a 409 Conflict
+    # response is recieved, update the 'X-transmission-Session-Id' header of
+    # the request and resend it.
     #
     # transmission - Net::HTTP connection to a Transmission daemon.
-    # req          - Net::HTTP::Post request to send to Transmission.
-    # reqs         - Remaining Net::HTTP::Post requests.
+    # reqs         - Net::HTTP::Post requests to send to Transmission.
     #
     # Returns nothing.
-    def self.send_transmission_requests(transmission, req, *reqs)
-      response = transmission.request req
+    def self.send_transmission_requests(transmission, reqs)
+      session_id = ''
 
-      remaining_reqs = case response
-      when Net::HTTPConflict
-        reqs.unshift req
-      else
-        reqs
+      reqs.each do |req|
+        req['X-Transmission-Session-Id'] = session_id
+
+        response = transmission.request req
+
+        case response
+        when Net::HTTPConflict
+          session_id = response['X-Transmission-Session-Id']
+          redo
+        end
       end
-
-      return if remaining_reqs.empty?
-
-      remaining_reqs.first['X-Transmission-Session-Id'] = response['X-Transmission-Session-Id']
-
-      send_transmission_requests transmission, *remaining_reqs
     end
 
     # Internal: Create a URI object for a Transmission daemon URL.
