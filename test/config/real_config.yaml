@@ -1,0 +1,82 @@
+---
+feeds:
+- http://www.nyaa.eu/?page=rss&cats=1_11
+- http://www.tokyotosho.info/rss.php?filter=7
+base_dir: /home/ookami/incoming
+fetcher:
+  name: transmission
+  user: ookami
+  password: watasinidekirukoto
+rules:
+- regex: \[Leopard-Raws\] Nagi no Asukara
+  dir: /home/ookami/incoming/anime/nagi_no_asu_kara
+
+- regex: \[Zero-Raws\] Golden Time
+  dir: /home/ookami/incoming/anime/golden_time
+
+- regex: \[Zero-Raws\] Kill la Kill
+  dir: /home/ookami/incoming/anime/kill_la_kill
+
+- regex: \[Zero-Raws\] Log Horizon
+  dir: /home/ookami/incoming/anime/log_horizon
+
+- regex: \[Ohys-Raws\] Strike the Blood
+  dir: /home/ookami/incoming/anime/strike_the_blood
+
+- regex: \[Leopard-Raws\] Saikin, Imouto
+  dir: /home/ookami/incoming/anime/saikin_imouto_no_yousu_ga_chotto_okashiinda_ga
+
+- regex: \[Zero-Raws\] Nobunagun
+  dir: /home/ookami/incoming/anime/nobunagun
+
+- regex: \[Zero-Raws\] Witch Craft Works
+  dir: /home/ookami/incoming/anime/witch_craft_works
+
+- regex: \[Zero-Raws\] Space Dandy
+  dir: /home/ookami/incoming/anime/space_dandy
+
+- regex: \[Zero-Raws\] Noragami
+  dir: /home/ookami/incoming/anime/noragami
+
+- regex: \[Zero-Raws\] Nobunaga the Fool
+  dir: /home/ookami/incoming/anime/nobunaga_the_fool
+
+- regex: \[Leopard-Raws\] D-Frag
+  dir: /home/ookami/incoming/anime/d-frag
+
+- regex: \[Zero-Raws\] Chuunibyou
+  dir: /home/ookami/incoming/anime/chuunibyou_demo_koi_ga_shitai_ren
+
+- regex: \[Leopard-Raws\] Hamatora
+  dir: /home/ookami/incoming/anime/hamatora
+
+- regex: \[Zero-Raws\] Mikakunin de Shinkoukei
+  dir: /home/ookami/incoming/anime/mikakunin_de_shinkoukei
+
+- regex: \[Leopard-Raws\] Strange Plus
+  dir: /home/ookami/incoming/anime/strange_plus
+
+- regex: \[Zero-Raws\] Mahou Sensou
+  dir: /home/ookami/incoming/anime/mahou_sensou
+
+- regex: \[Zero-Raws\] Sakura Trick
+  dir: /home/ookami/incoming/anime/sakura_trick
+
+- regex: \[Zero-Raws\] pupa
+  dir: /home/ookami/incoming/anime/pupa
+
+- regex: \[Zero-Raws\] Nourin
+  dir: /home/ookami/incoming/anime/nourin
+
+- regex: \[Zero-Raws\] Nisekoi
+  dir: /home/ookami/incoming/anime/nisekoi
+
+- regex: \[Zero-Raws\] Sekai Seifuku
+  dir: /home/ookami/incoming/anime/sekai_seifuku_bouryaku_no_zvezda
+
+- regex: \[Zero-Raws\] Wizard Barristers
+  dir: /home/ookami/incoming/anime/wizard_barristers
+
+- regex: \[Zero-Raws\] Tokyo Ravens
+  dir: /home/ookami/incoming/anime/tokyo_ravens
+
