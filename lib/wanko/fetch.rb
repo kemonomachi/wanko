@@ -62,9 +62,9 @@ module Wanko
       when 'json'
         torrents.to_json
       when 'simple'
-        torrents.map {|t| t[:link]}.join "\n"
+        torrents.map {|t| t.link}.join "\n"
       when 'yaml', nil
-        Utility.stringify_keys(torrents).to_yaml
+        Utility.stringify_keys(torrents.map &:to_h).to_yaml
       else
         raise Wanko::ConfigError, "Invalid format '#{format}' for stdout fetcher."
       end
@@ -78,10 +78,10 @@ module Wanko
     # Returns nothing.
     def self.to_watchdir(torrents)
       torrents.each do |tor|
-        FileUtils.mkdir_p tor[:dir]
+        FileUtils.mkdir_p tor.dir
         
-        open tor[:link] do |rem|
-          File.binwrite File.join(tor[:dir], "#{tor[:name]}.torrent"), rem.read
+        open tor.link do |rem|
+          File.binwrite File.join(tor.dir, "#{tor.name}.torrent"), rem.read
         end
       end
     end
@@ -145,7 +145,7 @@ module Wanko
     # Internal: Generate a JSON-encoded 'torrent-add' RPC command that can be
     # sent to a Transmission daemon.
     #
-    # torrent - Torrent to generate command for. Should contain :link and :dir.
+    # torrent - Torrent to generate command for.
     #
     # Returns a String RPC command.
     def self.make_transmission_rpc_command(torrent)
@@ -153,8 +153,8 @@ module Wanko
         {
           "method" => "torrent-add",
           "arguments" => {
-            "filename" => torrent[:link],
-            "download-dir" => torrent[:dir]
+            "filename" => torrent.link,
+            "download-dir" => torrent.dir
           }
         }
       )

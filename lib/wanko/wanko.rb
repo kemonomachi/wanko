@@ -1,6 +1,7 @@
 require 'optparse'
 require 'rss'
 
+require 'wanko/data'
 require 'wanko/read'
 
 module Wanko
@@ -65,7 +66,7 @@ module Wanko
     .product(rules)
     .select {|item, rule| rule[:regex] =~ item.title}
     .map { |item, rule|
-      {name: item.title, link: item.link, dir: rule[:dir]}
+      Data::Torrent.new item.title, item.link, rule[:dir]
     }
   end
 end

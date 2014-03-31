@@ -9,14 +9,15 @@ require 'yaml'
 require 'fakeweb'
 require_relative 'mock'
 
+require 'wanko/data'
 require 'wanko/fetch'
 require 'wanko/utility'
 
 class TestFetch < MiniTest::Unit::TestCase
   def setup()
     @torrents = [
-      {name: 'test1', link: 'http://www.test.com/1', dir: 'temp'},
-      {name: 'test2', link: 'http://www.test.com/2', dir: 'temp'}
+      Wanko::Data::Torrent.new('test1', 'http://www.test.com/1', 'temp'),
+      Wanko::Data::Torrent.new('test2', 'http://www.test.com/2', 'temp')
     ]
   end
 
@@ -33,14 +34,14 @@ class TestFetch < MiniTest::Unit::TestCase
   end
 
   def test_serialize()
-    results = ['json', 'simple', 'yaml', nil].inject({}) { |memo, format|
-      memo.merge format => Wanko::Fetch.serialize(format, @torrents)
+    results = ['json', 'simple', 'yaml', nil].each_with_object({}) { |format, memo|
+      memo[format] = Wanko::Fetch.serialize(format, @torrents)
     }
 
-    assert_equal @torrents, JSON.parse(results['json'], symbolize_names: true)
-    assert_equal @torrents.map {|t| t[:link]}.to_set, Set[*results['simple'].split("\n")]
-    assert_equal @torrents, Wanko::Utility.symbolize_keys(YAML.load(results['yaml']))
-    assert_equal @torrents, Wanko::Utility.symbolize_keys(YAML.load(results[nil]))
+    assert_equal @torrents.map(&:to_h), JSON.parse(results['json'], symbolize_names: true)
+    assert_equal @torrents.map {|t| t.link}.to_set, Set[*results['simple'].split("\n")]
+    assert_equal @torrents.map(&:to_h), Wanko::Utility.symbolize_keys(YAML.load(results['yaml']))
+    assert_equal @torrents.map(&:to_h), Wanko::Utility.symbolize_keys(YAML.load(results[nil]))
 
     assert_raises(Wanko::ConfigError) do
       Wanko::Fetch.serialize 'bad_format', @torrents
@@ -86,13 +87,13 @@ class TestFetch < MiniTest::Unit::TestCase
   def test_make_transmission_rpc_command()
     torrent = @torrents.first
 
-    result = Wanko::Fetch.make_transmission_rpc_command(torrent)
+    result = Wanko::Fetch.make_transmission_rpc_command torrent
 
     expected = {
       "method" => "torrent-add",
       "arguments" => {
-        "filename" => torrent[:link],
-        "download-dir" => torrent[:dir]
+        "filename" => torrent.link,
+        "download-dir" => torrent.dir
       }
     }
 

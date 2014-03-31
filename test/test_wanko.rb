@@ -16,7 +16,7 @@ class TestWanko < MiniTest::Unit::TestCase
     config = Wanko::Read.config 'config'
     history = Wanko::Read.history 'config'
 
-    result = Wanko.match feed, config[:rules], history['http://www.tokyotosho.info/rss.php?filter=7']
+    result = Wanko.match(feed, config[:rules], history['http://www.tokyotosho.info/rss.php?filter=7']).map &:to_h
 
     assert_equal EXPECTED::Match, result
 
