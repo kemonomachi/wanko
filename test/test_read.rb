@@ -4,6 +4,7 @@ require 'minitest/pride'
 require 'fileutils'
 require 'rss'
 
+require 'wanko/data'
 require 'wanko/fetch'
 require 'wanko/read'
 
@@ -48,9 +49,9 @@ class TestRead < MiniTest::Unit::TestCase
         password: 'sinzite'
       },
       rules: [
-        {regex: /Example Podcast/i, dir: '/home/example/downloads'},
-        {regex: /.*\[FOSS\].*/i, dir: File.join('/home/example/downloads', 'foss/new')},
-        {regex: /\[INDIE\] Colonel Panic and the Segfaults/i, dir: '/data/music/colonel_panic_and_the_segfaults'}
+        Wanko::Data::Rule.new('Example Podcast', '/home/example/downloads'),
+        Wanko::Data::Rule.new('.*\[FOSS\].*', File.join('/home/example/downloads', 'foss/new')),
+        Wanko::Data::Rule.new('\[INDIE\] Colonel Panic and the Segfaults', '/data/music/colonel_panic_and_the_segfaults')
       ]
     }
 
@@ -65,10 +66,7 @@ class TestRead < MiniTest::Unit::TestCase
 
     result = Wanko::Read.convert_rule rule, '/test/downloads'
 
-    expected = {
-      regex: /.*Eruruu.*/i,
-      dir: File.absolute_path('utawarerumono', '/test/downloads')
-    }
+    expected = Wanko::Data::Rule.new '.*Eruruu.*', File.absolute_path('utawarerumono', '/test/downloads')
 
     assert_equal expected, result
   end

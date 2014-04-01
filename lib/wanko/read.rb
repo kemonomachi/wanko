@@ -1,5 +1,6 @@
 require 'yaml'
 
+require 'wanko/data'
 require 'wanko/fetch'
 require 'wanko/utility'
 
@@ -28,18 +29,17 @@ module Wanko
       }
     end
 
-    # Internal: Convert a rule Hash by building a Regexp object and making
-    # the path absolute.
+    # Internal: Convert a rule Hash into a Rule object, making the path
+    # absolute.
     #
-    # rule     - Rule to convert. Must have a :regex and a :dir entry.
-    # base_dir - Directory to use as base for relative paths.
+    # rule     - Rule to convert. Has a required :regex entry and an optional
+    #            :dir entry.
+    # base_dir - Directory to use as base for relative paths, or as download
+    #            dir if the rule has no :dir entry.
     #
-    # Returns an Array of converted rules.
+    # Returns an Array of converted Rules.
     def self.convert_rule(rule, base_dir)
-      {
-        regex: /#{rule[:regex]}/i,
-        dir: File.absolute_path(rule[:dir] || '', base_dir)
-      }
+      Data::Rule.new rule[:regex], File.absolute_path(rule[:dir] ||'', base_dir)
     end
 
     # Public: Read an RSS feed history file.

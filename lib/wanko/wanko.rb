@@ -49,7 +49,7 @@ module Wanko
   # already read items.
   #
   # urls    - Array of feed urls to check.
-  # rules   - Array of rules to match against.
+  # rules   - Array of Rules to match against.
   # history - Hash with urls mapped to Arrays of already read items. Will be
   #           accessed using the urls in the urls parameter. If a url is
   #           missing, an empty Array will be substituted.
@@ -72,18 +72,17 @@ module Wanko
   # already read items.
   #
   # feed    - RSS object which items to search through.
-  # rules   - Array of rules hashes with :regex and :dir entries.
+  # rules   - Array of Rules.
   # history - Array of GUIDs. Items found in this array will be rejected.
   #
-  # Returns an Array of Hashes representing the matched items. Each Hash has
-  #   :name, :link and :dir entries.
+  # Returns an Array of Torrents representing the matched items.
   def self.match(feed, rules, history)
     feed.items
     .reject {|item| history.include? item.guid.content}
     .product(rules)
-    .select {|item, rule| rule[:regex] =~ item.title}
+    .select {|item, rule| rule =~ item.title}
     .map { |item, rule|
-      Data::Torrent.new item.title, item.link, rule[:dir]
+      Data::Torrent.new item.title, item.link, rule.dir
     }
   end
 end
