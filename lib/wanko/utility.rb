@@ -1,6 +1,6 @@
 module Wanko
 
-  # Public: Various utility functions.
+  # Various utility functions.
   module Utility
 
     # Public: Recursively convert all keys of a Hash using the supplied block.
@@ -36,7 +36,7 @@ module Wanko
     end
 
     # Public: Recursively convert all keys in a Hash to Symbols. Does not check
-    # for duplicate keys.
+    # for duplicate keys. See ::convert_keys for more info.
     #
     # hash - Hash to convert. All keys must respond to #to_sym.
     #
@@ -46,7 +46,7 @@ module Wanko
     end
 
     # Public: Recursively convert all keys in a Hash to Strings. Does not check
-    # for duplicate keys.
+    # for duplicate keys. See ::convert_keys for more info.
     #
     # hash - Hash to convert. All keys must respond to #to_s.
     #

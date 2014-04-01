@@ -5,6 +5,13 @@ require 'wanko/data'
 require 'wanko/read'
 
 module Wanko
+
+  # Public: Parse cli switches. Exits and prints a usage message when given
+  # -h, --help or an invalid switch.
+  #
+  # args - Array of switches to parse. Will not be altered.
+  #
+  # Returns a Hash containing the parsed options.
   def self.parse_cli_switches(args)
     options = {config_dir: File.join(Dir.home, ".wanko")}
 
@@ -38,6 +45,16 @@ module Wanko
     options
   end
 
+  # Public: Check RSS feeds for new torrents matching a set of rules, excluding
+  # already read items.
+  #
+  # urls    - Array of feed urls to check.
+  # rules   - Array of rules to match against.
+  # history - Hash with urls mapped to Arrays of already read items. Will be
+  #           accessed using the urls in the urls parameter. If a url is
+  #           missing, an empty Array will be substituted.
+  #
+  # Returns a pair [[Torrent], Hash] of matched items and an updated history
   def self.check_feeds(urls, rules, history)
     matches, new_history = urls.map { |url|
       feed = Read.feed(url) or next [[], {}]

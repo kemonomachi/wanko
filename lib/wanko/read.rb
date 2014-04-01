@@ -5,7 +5,7 @@ require 'wanko/utility'
 
 module Wanko
 
-  # Public: Functions to read in data from files, urls and similar.
+  # Functions to read in data from files, urls and similar.
   # All functions can be considered to rely on external state.
   module Read
 
