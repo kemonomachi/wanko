@@ -25,8 +25,8 @@ module Wanko
     def self.convert_keys(arg, &block)
       case arg
       when Hash
-        arg.inject({}) { |memo, (key, val)|
-          memo.merge yield(key) => convert_keys(val, &block)
+        arg.each_with_object({}) { |(key, val), memo|
+          memo[yield(key)] = convert_keys(val, &block)
         }
       when Array
         arg.map {|val| convert_keys val, &block}

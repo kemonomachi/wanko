@@ -2,8 +2,6 @@
 
 require 'wanko'
 
-require 'pp'
-
 options = Wanko::parse_cli_switches ARGV
 
 config = begin 

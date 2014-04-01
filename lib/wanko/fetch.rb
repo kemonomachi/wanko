@@ -62,7 +62,7 @@ module Wanko
       when 'json'
         torrents.to_json
       when 'simple'
-        torrents.map {|t| t.link}.join "\n"
+        torrents.map(&:link).join "\n"
       when 'yaml', nil
         Utility.stringify_keys(torrents.map &:to_h).to_yaml
       else
@@ -80,8 +80,8 @@ module Wanko
       torrents.each do |tor|
         FileUtils.mkdir_p tor.dir
         
-        open tor.link do |rem|
-          File.binwrite File.join(tor.dir, "#{tor.name}.torrent"), rem.read
+        open tor.link do |remote|
+          File.binwrite File.join(tor.dir, "#{tor.name}.torrent"), remote.read
         end
       end
     end

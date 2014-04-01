@@ -55,6 +55,7 @@ module Wanko
         {}
       end
 
+      # This is OK, since history is treated as read-only.
       history.default = []
 
       history

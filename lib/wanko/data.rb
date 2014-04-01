@@ -1,7 +1,4 @@
 require 'json'
-require 'yaml'
-
-require 'wanko/utility'
 
 module Wanko
 
