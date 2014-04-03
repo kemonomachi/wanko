@@ -57,7 +57,7 @@ module Wanko
   # Returns a pair [[Torrent], Hash] of matched items and an updated history
   def self.check_feeds(urls, rules, history)
     matches, new_history = urls.map { |url|
-      feed = Read.feed(url) or next [[], {}]
+      feed = Read.feed(url) or next [[], {url => history[url]}]
 
       [
         match(feed, rules, Array(history[url])),
