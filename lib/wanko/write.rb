@@ -18,6 +18,10 @@ module Wanko
     def self.history(dir, history)
       File.write File.join(dir, 'history.yaml'), history.to_yaml
     end
+
+    def self.config(dir, config)
+      File.write File.join(dir, 'config.yaml'), config.to_yaml
+    end
   end
 end
 

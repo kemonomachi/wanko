@@ -1,6 +1,7 @@
 require 'optparse'
 require 'rss'
 
+require 'wanko/command'
 require 'wanko/data'
 require 'wanko/read'
 
@@ -13,7 +14,10 @@ module Wanko
   #
   # Returns a Hash containing the parsed options.
   def self.parse_cli_switches(args)
-    options = {config_dir: File.join(Dir.home, ".wanko")}
+    options = {
+                command: Command.method(:fetch),
+                config_dir: File.join(Dir.home, ".wanko")
+              }
 
     parser = OptionParser.new do |parser|
       parser.banner = 'Usage: wanko [-c DIR]'
@@ -23,6 +27,15 @@ module Wanko
 
       parser.on '-c DIR', '--config_dir', 'Use a different config directory' do |dir|
         options[:config_dir] = File.absolute_path dir
+      end
+
+      parser.on '-a RULE', '--add', 'Add a fetch rule' do |rule|
+        options[:command] = Command.method :add
+        options[:regex] = rule
+      end
+
+      parser.on '-d DIR', '--directory', 'Optional directory for fetch rules added with -a' do |dir|
+        options[:dir] = dir
       end
 
       parser.separator ''

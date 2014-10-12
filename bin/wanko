@@ -4,21 +4,5 @@ require 'wanko'
 
 options = Wanko::parse_cli_switches ARGV
 
-config = begin 
-  Wanko::Read.config options[:config_dir]
-rescue Errno::ENOENT
-  abort 'Config file not found, aborting...'
-end
-
-[:feeds, :rules].each do |key|
-  warn 'WARN: No #{key} specified.' if config[key].empty?
-end
-
-history = Wanko::Read.history options[:config_dir]
-
-torrents, new_history = Wanko::check_feeds config[:feeds], config[:rules], history
-
-config[:fetcher].call torrents
-
-Wanko::Write.history options[:config_dir], new_history
+options[:command].call options
 

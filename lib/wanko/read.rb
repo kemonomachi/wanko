@@ -29,6 +29,10 @@ module Wanko
       }
     end
 
+    def self.raw_config(dir)
+      Utility.symbolize_keys(YAML.load_file File.join(dir, 'config.yaml'))
+    end
+
     # Internal: Convert a rule Hash into a Rule object, making the path
     # absolute.
     #
