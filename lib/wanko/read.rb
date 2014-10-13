@@ -10,27 +10,34 @@ module Wanko
   # All functions can be considered to rely on external state.
   module Read
 
-    # Public: Read a config file, convert values and supply some sensible
-    # defaults.
+    # Public: Read a config file, create a fetcher lambda and convert the
+    # rules.
     #
     # dir - Path to the directory containing the config file.
     #
     # Returns a Hash containing the configuration.
     def self.config(dir)
-      config = Utility.symbolize_keys(YAML.load_file File.join(dir, 'config.yaml')) || {}
+      config = raw_config dir
 
-      base_dir = config[:base_dir] || File.join(Dir.home, 'downloads')
-
-      {
-        feeds: Array(config[:feeds]),
-        base_dir: base_dir,
+      config.merge(
         fetcher: Fetch.fetcher_for({name: 'stdout'}.merge Hash config[:fetcher]),
-        rules: Array(config[:rules]).map {|rule| convert_rule rule, base_dir}
-      }
+        rules: Array(config[:rules]).map {|rule| convert_rule rule, config[:base_dir]}
+      )
     end
 
+    # Public: Read a config file and supply some sensible defaults.
+    #
+    # dir - Path to the directory containing the config file.
+    #
+    # Returns a Hash containing the configuration.
     def self.raw_config(dir)
-      Utility.symbolize_keys(YAML.load_file File.join(dir, 'config.yaml'))
+      config = Utility.symbolize_keys(YAML.load_file File.join(dir, 'config.yaml')) || {}
+
+      config.merge(
+        feeds: Array(config[:feeds]),
+        base_dir: config[:base_dir] || File.join(Dir.home, 'downloads'),
+        rules: Array(config[:rules])
+      )
     end
 
     # Internal: Convert a rule Hash into a Rule object, making the path
@@ -43,7 +50,7 @@ module Wanko
     #
     # Returns an Array of converted Rules.
     def self.convert_rule(rule, base_dir)
-      Data::Rule.new rule[:regex], File.absolute_path(rule[:dir] ||'', base_dir)
+      Data::Rule.new rule[:regex], File.absolute_path(rule[:dir] || '', base_dir)
     end
 
     # Public: Read an RSS feed history file.
