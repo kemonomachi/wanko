@@ -1,3 +1,5 @@
+require 'terminal-table'
+
 require 'wanko/read'
 require 'wanko/wanko'
 require 'wanko/write'
@@ -5,7 +7,7 @@ require 'wanko/write'
 module Wanko
   module Command
     def self.fetch(options)
-      config = begin 
+      config = begin
         Wanko::Read.config options[:config_dir]
       rescue Errno::ENOENT
         abort 'Config file not found, aborting...'
@@ -25,17 +27,30 @@ module Wanko
     end
 
     def self.add(options)
-      config = begin 
+      config = begin
         Wanko::Read.raw_config options[:config_dir]
       rescue Errno::ENOENT
         abort 'Config file not found, aborting...'
       end
 
-      rule = [regex: options[:regex], dir: options[:dir] || config[:base_dir]]
+      id = config[:rules].map {|x| x[:id]}.max + 1
+
+      rule = [id: id, regex: options[:regex], dir: options[:dir] || config[:base_dir]]
 
       new_config = config.merge rules: config[:rules] + rule
 
       Wanko::Write.config options[:config_dir], Wanko::Utility.stringify_keys(new_config)
+    end
+
+    def self.list(options)
+      config = begin
+        Wanko::Read.raw_config options[:config_dir]
+      rescue Errno::ENOENT
+        abort 'Config file not found, aborting...'
+      end
+
+      puts Terminal::Table.new(rows: config[:rules].map {|r| [r[:id], r[:regex], r[:dir]]},
+                               headings: ['ID', 'Regex', 'Directory']) {align_column 0, :right}
     end
   end
 end

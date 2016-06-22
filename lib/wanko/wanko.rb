@@ -38,6 +38,10 @@ module Wanko
         options[:dir] = dir
       end
 
+      parser.on '-l', '--list', 'List all rules' do
+        options[:command] = Command.method :list
+      end
+
       parser.separator ''
       parser.separator 'Other:'
 
