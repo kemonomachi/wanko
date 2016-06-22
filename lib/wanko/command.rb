@@ -52,6 +52,18 @@ module Wanko
       puts Terminal::Table.new(rows: config[:rules].map {|r| [r[:id], r[:regex], r[:dir]]},
                                headings: ['ID', 'Regex', 'Directory']) {align_column 0, :right}
     end
+
+    def self.remove(options)
+      config = begin
+        Wanko::Read.raw_config options[:config_dir]
+      rescue Errno::ENOENT
+        abort 'Config file not found, aborting...'
+      end
+
+      new_rules = config[:rules].reject {|rule| options[:ids].include? rule[:id]}
+
+      Wanko::Write.config options[:config_dir], Wanko::Utility.stringify_keys(config.merge rules: new_rules)
+    end
   end
 end
 

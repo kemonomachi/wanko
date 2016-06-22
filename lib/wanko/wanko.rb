@@ -42,6 +42,11 @@ module Wanko
         options[:command] = Command.method :list
       end
 
+      parser.on '-r ID', '--remove', Integer, 'Remove a fetch rule' do |id|
+        options[:command] = Command.method :remove
+        options[:ids] = [id]
+      end
+
       parser.separator ''
       parser.separator 'Other:'
 
