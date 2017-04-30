@@ -8,6 +8,16 @@ links can be printed to stdout or sent to Transmission for download, or the
 torrent files can be downloaded to a watchdir for processing by other torrent
 clients.
 
+Installation
+------------
+
+wanko can be installed from RubyGems:
+
+    gem install kemonomachi-wanko
+
+'kemonomachi-' is used as a ghetto namespace, since RubyGems doesn't support
+proper ones.
+
 Usage
 -----
 
