@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name = 'wanko'
-  spec.version = '0.4.0'
+  spec.version = '0.4.1'
   spec.date = Time.now.utc.strftime('%Y-%m-%d')
   spec.required_ruby_version = '>=2.0.0'
   spec.license = 'WTFPL'

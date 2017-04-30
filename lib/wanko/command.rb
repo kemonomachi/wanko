@@ -33,7 +33,11 @@ module Wanko
         abort 'Config file not found, aborting...'
       end
 
-      id = config[:rules].map {|x| x[:id]}.max + 1
+      id = if config[:rules].empty?
+             0
+           else
+             config[:rules].map {|x| x[:id]}.max + 1
+           end
 
       rule = [id: id, regex: options[:regex], dir: options[:dir] || config[:base_dir]]
 
