@@ -11,10 +11,12 @@ clients.
 Usage
 -----
 
-    wanko [-c DIR]
+    wanko [options]
 
 The optional -c switch specifies the configuration directory, which defaults to
 $HOME/.wanko.
+
+See 'wanko --help' for usage info.
 
 Can be run manually, but creating a cron job to run it at regular intervals is
 recommended. It is not a daemon.

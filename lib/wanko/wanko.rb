@@ -20,7 +20,7 @@ module Wanko
               }
 
     parser = OptionParser.new do |parser|
-      parser.banner = 'Usage: wanko [-c DIR]'
+      parser.banner = 'Usage: wanko [options]'
 
       parser.separator ''
       parser.separator 'Options:' 
@@ -29,9 +29,9 @@ module Wanko
         options[:config_dir] = File.absolute_path dir
       end
 
-      parser.on '-a RULE', '--add', 'Add a fetch rule' do |rule|
+      parser.on '-a REGEX', '--add', 'Add a fetch rule' do |regex|
         options[:command] = Command.method :add
-        options[:regex] = rule
+        options[:regex] = regex
       end
 
       parser.on '-d DIR', '--directory', 'Optional directory for fetch rules added with -a' do |dir|
